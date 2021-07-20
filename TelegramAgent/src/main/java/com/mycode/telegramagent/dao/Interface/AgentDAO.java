@@ -5,5 +5,5 @@ import com.mycode.telegramagent.models.Agent;
 
 public interface AgentDAO {
 
-    AgentDto signup(AgentDto agentDto);
+    Agent signup(AgentDto agentDto);
 }

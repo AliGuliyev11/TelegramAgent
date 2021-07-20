@@ -1,7 +1,9 @@
 package com.mycode.telegramagent.services.Impl;
 
+import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.exceptions.EmailNotVerified;
+import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.services.Interface.IAgentService;
 import lombok.SneakyThrows;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -26,19 +28,20 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class IAgentServiceImpl implements IAgentService {
     Environment environment;
-//    UserDAO userDAO;
+    AgentDAO agentDAO;
 //    VerifyTokenDAO vtDAO;
 //    ModelMapperComponent modelMapperComponent;
 //    SchedulerExecutorComponent schEx;
 
-    public IAgentServiceImpl(Environment environment) {
+    public IAgentServiceImpl(Environment environment,AgentDAO agentDAO) {
         this.environment = environment;
-//        this.userDAO = userDAO;
+        this.agentDAO = agentDAO;
 //        this.vtDAO = vtDAO;
 //        this.modelMapperComponent = modelMapperComponent;
 //        this.schEx = schEx;
@@ -83,7 +86,7 @@ public class IAgentServiceImpl implements IAgentService {
             // Set password credential
             userResource.resetPassword(passwordCred);
             //create newUser for database
-//            AppUser appUser = userDAO.createUser(userDTO);
+            Agent agent = agentDAO.signup(agentDto);
 //            sendVerifyEmail(appUser.getEmail());
         }
 
@@ -116,9 +119,14 @@ public class IAgentServiceImpl implements IAgentService {
         user.setEnabled(true);
         user.setUsername(agentDto.getEmail());
         user.setEmail(agentDto.getEmail());
-        user.setAttributes(Collections.singletonMap("phone", Collections.singletonList(agentDto.getPhoneNumber())));
-        user.setAttributes(Collections.singletonMap("agencyName", Collections.singletonList(agentDto.getAgencyName())));
-        user.setAttributes(Collections.singletonMap("companyName", Collections.singletonList(agentDto.getCompanyName())));
+
+
+        Map<String, List<String>> attributes=new HashMap<>();
+        attributes.put("phone", Collections.singletonList(agentDto.getPhoneNumber()));
+        attributes.put("agencyName", Collections.singletonList(agentDto.getAgencyName()));
+        attributes.put("companyName", Collections.singletonList(agentDto.getCompanyName()));
+
+        user.setAttributes(attributes);
         return user;
     }
 

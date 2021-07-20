@@ -19,10 +19,10 @@ public class AgentImpl implements AgentDAO {
     }
 
     @Override
-    public AgentDto signup(AgentDto agentDto) {
+    public Agent signup(AgentDto agentDto) {
 
         Agent agent=objectMapper.convertValue(agentDto,Agent.class);
         agentRepo.save(agent);
-        return agentDto;
+        return agent;
     }
 }

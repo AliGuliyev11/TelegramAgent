@@ -1,17 +1,16 @@
 package com.mycode.telegramagent.models;
 
+import com.mycode.telegramagent.services.LifeCycle.AgentLifeCycle;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 
 @Entity
 @Getter
 @Setter
 @Builder(toBuilder = true)
+@EntityListeners(AgentLifeCycle.class)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Agent {
