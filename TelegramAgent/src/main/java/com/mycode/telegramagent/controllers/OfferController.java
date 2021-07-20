@@ -1,0 +1,26 @@
+package com.mycode.telegramagent.controllers;
+
+import com.mycode.telegramagent.models.Offer;
+import com.mycode.telegramagent.services.Interface.IOfferService;
+import lombok.SneakyThrows;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequestMapping("api/v1/offer")
+public class OfferController {
+
+
+    private final IOfferService offerService;
+
+    public OfferController(IOfferService offerService) {
+        this.offerService = offerService;
+    }
+
+    @SneakyThrows
+    @PostMapping("/{userId}")
+    public Offer sendOffer(@PathVariable("userId") String userId, @RequestParam("agencyName") String agencyName,
+                           @RequestParam("agencyNumber") String agencyNumber, @RequestParam(value = "File") MultipartFile file) {
+        return offerService.saveOffer(userId, agencyName, agencyNumber, file);
+    }
+}
