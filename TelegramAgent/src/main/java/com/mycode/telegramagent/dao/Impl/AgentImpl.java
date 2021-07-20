@@ -22,7 +22,14 @@ public class AgentImpl implements AgentDAO {
     public Agent signup(AgentDto agentDto) {
 
         Agent agent=objectMapper.convertValue(agentDto,Agent.class);
+        String hash=String.valueOf(agent.getAgencyName().hashCode()).replaceAll("-","");
+        agent.setHashCode(Integer.valueOf(hash));
         agentRepo.save(agent);
         return agent;
+    }
+
+    @Override
+    public Agent getAgentByHashCode(int agencyName) {
+        return agentRepo.getAgentByHashCode(agencyName);
     }
 }

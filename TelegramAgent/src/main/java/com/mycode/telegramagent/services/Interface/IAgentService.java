@@ -15,7 +15,8 @@ public interface IAgentService {
 
     CredentialRepresentation passwordCred(AgentDto agentDto);
 //
-//    Boolean verifyUser(UserDTO userDTO, String token);
+
+    Boolean verifyUser(int agencyName);
 //
 //    void sendVerifyEmail(String email);
 

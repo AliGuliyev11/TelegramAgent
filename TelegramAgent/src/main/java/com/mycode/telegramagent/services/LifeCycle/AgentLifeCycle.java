@@ -27,7 +27,7 @@ public class AgentLifeCycle {
 
     @PostPersist
     private void afterPost(Agent agent) {
-        String url = " http://localhost:8082/api/auth/confirm/" + agent.getAgencyName();
+        String url = " http://localhost:8082/api/v1/auth/confirm/" + agent.getHashCode();
         String text="Hi," + agent.getAgencyName() + ".This is confirmation link click <a href=" + url + ">here</a>";
         emailService.sendSimpleMessage(agent.getEmail(), "Verification email",
                 text);

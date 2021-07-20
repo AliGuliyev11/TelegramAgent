@@ -39,7 +39,7 @@ public class IAgentServiceImpl implements IAgentService {
 //    ModelMapperComponent modelMapperComponent;
 //    SchedulerExecutorComponent schEx;
 
-    public IAgentServiceImpl(Environment environment,AgentDAO agentDAO) {
+    public IAgentServiceImpl(Environment environment, AgentDAO agentDAO) {
         this.environment = environment;
         this.agentDAO = agentDAO;
 //        this.vtDAO = vtDAO;
@@ -106,7 +106,7 @@ public class IAgentServiceImpl implements IAgentService {
         Keycloak keycloak = connectKeycloak();
         RealmResource realmResource = keycloak.realm(realm);
         UserRepresentation userRep = realmResource.users().search(agentDto.getEmail()).get(0);
-        if (!userRep.isEmailVerified()){
+        if (!userRep.isEmailVerified()) {
             throw new EmailNotVerified();
         }
 
@@ -121,7 +121,7 @@ public class IAgentServiceImpl implements IAgentService {
         user.setEmail(agentDto.getEmail());
 
 
-        Map<String, List<String>> attributes=new HashMap<>();
+        Map<String, List<String>> attributes = new HashMap<>();
         attributes.put("phone", Collections.singletonList(agentDto.getPhoneNumber()));
         attributes.put("agencyName", Collections.singletonList(agentDto.getAgencyName()));
         attributes.put("companyName", Collections.singletonList(agentDto.getCompanyName()));
@@ -139,27 +139,22 @@ public class IAgentServiceImpl implements IAgentService {
         return passwordCred;
     }
 
-//    @Override
-//    public Boolean verifyUser(UserDTO userDTO, String token) {
-//        String email = userDTO.getEmail();
-//        VerificationToken vToken = vtDAO.findByToken(token);
-//        if (vToken.getEmail().equals(email)) {
-//            Keycloak keycloak = connectKeycloak();
-//            RealmResource realmResource = keycloak.realm(realm);
-//            RolesResource rolesResource = realmResource.roles();
-//            RoleRepresentation initial = rolesResource.get(initialRole).toRepresentation();
-//            RoleRepresentation standard = rolesResource.get(standardRole).toRepresentation();
-//            UserRepresentation userRep = realmResource.users().search(email).get(0);
-//            userRep.setEmailVerified(true);
-//            UserResource ur = realmResource.users().get(realmResource.users().search(email).get(0).getId());
-//            ur.roles().realmLevel().remove(Collections.singletonList(initial));
-//            ur.roles().realmLevel().add(Collections.singletonList(standard));
-//            ur.update(userRep);
-//            vtDAO.delete(vToken);
-//            return true;
-//        }
-//        return false;
-//    }
+    @Override
+    public Boolean verifyUser(int agencyName) {
+        String email = agentDAO.getAgentByHashCode(agencyName).getEmail();
+        Keycloak keycloak = connectKeycloak();
+        RealmResource realmResource = keycloak.realm(realm);
+        RolesResource rolesResource = realmResource.roles();
+        RoleRepresentation initial = rolesResource.get(initialRole).toRepresentation();
+        RoleRepresentation standard = rolesResource.get(standardRole).toRepresentation();
+        UserRepresentation userRep = realmResource.users().search(email).get(0);
+        userRep.setEmailVerified(true);
+        UserResource ur = realmResource.users().get(realmResource.users().search(email).get(0).getId());
+        ur.roles().realmLevel().remove(Collections.singletonList(initial));
+        ur.roles().realmLevel().add(Collections.singletonList(standard));
+        ur.update(userRep);
+        return true;
+    }
 //
 //    @Override
 //    public void sendVerifyEmail(String email) {

@@ -23,4 +23,5 @@ public class Agent {
     private String agencyName;
     private String companyName;
     private String phoneNumber;
+    private int hashCode;
 }
