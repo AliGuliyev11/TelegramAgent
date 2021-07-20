@@ -15,6 +15,7 @@ public class GrantedAuthConverter implements Converter<Jwt, Collection<GrantedAu
     public Collection<GrantedAuthority> convert(Jwt source) {
         Map<String, Object> realmAccess = source.getClaimAsMap("realm_access");
         List<String> roles = (List<String>) realmAccess.get("roles");
+        System.out.println("Size: "+roles.size());
         return roles.stream()
                 .map(rn -> new SimpleGrantedAuthority("ROLE_" + rn))
                 .collect(Collectors.toList());

@@ -2,6 +2,7 @@ package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
+import com.mycode.telegramagent.dto.PasswordChangeDto;
 import com.mycode.telegramagent.exceptions.*;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.services.Interface.IAgentService;
@@ -69,8 +70,6 @@ public class IAgentServiceImpl implements IAgentService {
         RolesResource rolesResource = realmResource.roles();
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(userRepresentation);
-//        userDTO.setStatusCode(response.getStatus());
-//        userDTO.setStatus(response.getStatusInfo().toString());
         if (response.getStatus() == 201) {
             String userId = CreatedResponseUtil.getCreatedId(response);
             CredentialRepresentation passwordCred = passwordCred(agentDto);
@@ -82,10 +81,28 @@ public class IAgentServiceImpl implements IAgentService {
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             userResource.resetPassword(passwordCred);
             Agent agent = agentDAO.signup(agentDto);
-//            sendVerifyEmail(appUser.getEmail());
         }
 
         return agentDto;
+    }
+
+    @Override
+    public void changePassword(String email, PasswordChangeDto passwordChangeDto) {
+
+        if (!checkPassword(email, passwordChangeDto.getOldPass())) {
+            throw new PasswordNotMatched();
+        }
+
+        Keycloak keycloak = connectKeycloak();
+        RealmResource realmResource = keycloak.realm(realm);
+        UserRepresentation userRep = realmResource.users().search(email).get(0);
+        UserResource ur = realmResource.users().get(realmResource.users().search(email).get(0).getId());
+        CredentialRepresentation passwordCred = new CredentialRepresentation();
+        passwordCred.setTemporary(false);
+        passwordCred.setType(CredentialRepresentation.PASSWORD);
+        passwordCred.setValue(passwordChangeDto.getNewPass());
+        ur.resetPassword(passwordCred);
+        ur.update(userRep);
     }
 
     private Boolean checkUnique(AgentDto agentDto) {
@@ -112,16 +129,38 @@ public class IAgentServiceImpl implements IAgentService {
         Keycloak keycloak = connectKeycloak();
         RealmResource realmResource = keycloak.realm(realm);
         UserRepresentation userRep = realmResource.users().search(agentDto.getEmail()).stream().findFirst().orElse(null);
-
         if (userRep == null) {
             throw new NotCreated();
         }
         if (!userRep.isEmailVerified()) {
             throw new EmailNotVerified();
         }
+        if (!checkPassword(agentDto.getEmail(), agentDto.getPassword())) {
+            throw new PasswordNotMatched();
+        }
 
         return authzClient.obtainAccessToken(agentDto.getEmail(), agentDto.getPassword());
     }
+
+    public Boolean checkPassword(String email, String password) {
+        Map<String, Object> clientCredentials = new HashMap<>();
+        clientCredentials.put("secret", clientSecret);
+        clientCredentials.put("grant_type", "password");
+        Configuration configuration =
+                new Configuration(authServerUrl, realm, clientId, clientCredentials, null);
+        AuthzClient authzClient = AuthzClient.create(configuration);
+        AccessTokenResponse a;
+        try {
+            a = authzClient.obtainAccessToken(email, password);
+        } catch (Exception e) {
+            a = null;
+        }
+        if (a== null) {
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public UserRepresentation userRepresentation(AgentDto agentDto) {

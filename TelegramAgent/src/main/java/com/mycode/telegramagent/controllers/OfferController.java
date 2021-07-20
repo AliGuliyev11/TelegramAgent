@@ -1,13 +1,16 @@
 package com.mycode.telegramagent.controllers;
 
+import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
+
 @RestController
-@RequestMapping("api/v1/offer")
+@RequestMapping(path = "api/v1/offer")
 public class OfferController {
 
 
@@ -16,6 +19,14 @@ public class OfferController {
     public OfferController(IOfferService offerService) {
         this.offerService = offerService;
     }
+
+
+    @GetMapping("/get")
+    public String er(@RequestAttribute("user") AgentDto agentDto) {
+        System.out.println("qwrqr"+agentDto.getEmail());
+        return "Salam";
+    }
+
 
     @SneakyThrows
     @PostMapping("/{userId}")

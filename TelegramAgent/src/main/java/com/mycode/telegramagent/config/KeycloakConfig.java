@@ -2,6 +2,8 @@ package com.mycode.telegramagent.config;
 
 import com.mycode.telegramagent.config.interceptor.AgentInterceptor;
 import com.mycode.telegramagent.config.securityUtil.GrantedAuthConverter;
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -12,6 +14,7 @@ import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextReques
 import org.keycloak.adapters.springsecurity.management.HttpSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +26,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -55,6 +60,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter impleme
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(new GrantedAuthConverter());
+        System.out.println(jwtConverter);
         return jwtConverter;
     }
 
@@ -65,12 +71,13 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter impleme
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
+                .antMatchers("/api/v1/offer/get").permitAll()
+                .antMatchers("/api/v1/agent/**").permitAll()
 //                .antMatchers("/api/v1/auth/confirm/*").hasRole(notVerified)
 //                .antMatchers("/api/v1/data/*").permitAll()
 //                .antMatchers("/api/v1/listings").permitAll()
 //                .antMatchers("/api/v1/listings/*").permitAll()
 //                .antMatchers("/api/v1/user/*").permitAll()
-//                .antMatchers("/api/v1/profile/*").hasRole(standard)
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -88,6 +95,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter impleme
 
         return new NullAuthenticatedSessionStrategy();
     }
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

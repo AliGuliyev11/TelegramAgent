@@ -123,6 +123,16 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(value = {PasswordNotMatched.class})
+    public ResponseEntity<Object> handlePasswordNotMatchedException(PasswordNotMatched ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,enter correct password.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
 
 
 }

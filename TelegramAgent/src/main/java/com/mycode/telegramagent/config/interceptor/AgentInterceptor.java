@@ -16,6 +16,8 @@ public class AgentInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
         String auth = request.getHeader("Authorization");
         if(auth != null){
+            System.out.println("Girir wteg");
+
             AgentDto agent = new AgentDto();
             String[] chunks = auth.split("\\.");
             Base64.Decoder decoder = Base64.getDecoder();
@@ -23,8 +25,9 @@ public class AgentInterceptor implements HandlerInterceptor {
             JsonNode payload = new ObjectMapper().readValue(data,JsonNode.class);
             agent.setEmail(payload.get("email").textValue());
             request.setAttribute("user",agent);
-            return false;
         }
         return true;
     }
+
+
 }
