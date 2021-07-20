@@ -1,26 +1,28 @@
 package com.mycode.telegramagent.controllers;
 
-import com.mycode.telegramagent.dto.UserDTO;
-import com.mycode.telegramagent.services.Interface.UserService;
+import com.mycode.telegramagent.dto.AgentDto;
+import com.mycode.telegramagent.services.Interface.IAgentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthController {
 
-    UserService userService;
+    IAgentService IAgentService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(IAgentService IAgentService) {
+        this.IAgentService = IAgentService;
     }
 
-    @PostMapping(path = "user/signup")
-    public ResponseEntity<?> signup(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.createUser(userDTO));
+    @PostMapping(path = "signup")
+    public ResponseEntity<?> signup(@RequestBody AgentDto agentDto) {
+        return ResponseEntity.ok(IAgentService.signup(agentDto));
+    }
+
+    @PostMapping(path = "signin")
+    public ResponseEntity<?> signIn(@RequestBody AgentDto agentDto) {
+        return ResponseEntity.ok(IAgentService.signin(agentDto));
     }
 
 }

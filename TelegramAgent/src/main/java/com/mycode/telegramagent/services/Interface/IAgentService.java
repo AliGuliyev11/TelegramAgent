@@ -1,19 +1,19 @@
 package com.mycode.telegramagent.services.Interface;
 
-import com.mycode.telegramagent.dto.UserDTO;
+import com.mycode.telegramagent.dto.AgentDto;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-public interface UserService {
-    UserDTO createUser(UserDTO userDTO);
+public interface IAgentService {
+    AgentDto signup(AgentDto agentDto);
 
-    AccessTokenResponse signin(UserDTO userDTO);
+    AccessTokenResponse signin(AgentDto agentDto);
 
-    UserRepresentation userRepresentation(UserDTO userDTO);
+    UserRepresentation userRepresentation(AgentDto agentDto);
 
-    CredentialRepresentation passwordCred(UserDTO userDTO);
+    CredentialRepresentation passwordCred(AgentDto agentDto);
 //
 //    Boolean verifyUser(UserDTO userDTO, String token);
 //
