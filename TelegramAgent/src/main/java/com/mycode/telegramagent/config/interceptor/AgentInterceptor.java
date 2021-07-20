@@ -2,6 +2,7 @@ package com.mycode.telegramagent.config.interceptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mycode.telegramagent.dto.AgentDto;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,15 +16,13 @@ public class AgentInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
         String auth = request.getHeader("Authorization");
         if(auth != null){
-//            UserDTO user = new UserDTO();
-//            String[] chunks = auth.split("\\.");
-//            Base64.Decoder decoder = Base64.getDecoder();
-//            String data = new String(decoder.decode(chunks[1]));
-//            JsonNode payload = new ObjectMapper().readValue(data,JsonNode.class);
-//            String slug= BasicUtil.createSlug(payload.get("preferred_username").textValue());
-//            user.setUsername(slug);
-//            user.setEmail(payload.get("email").textValue());
-//            request.setAttribute("user",user);
+            AgentDto agent = new AgentDto();
+            String[] chunks = auth.split("\\.");
+            Base64.Decoder decoder = Base64.getDecoder();
+            String data = new String(decoder.decode(chunks[1]));
+            JsonNode payload = new ObjectMapper().readValue(data,JsonNode.class);
+            agent.setEmail(payload.get("email").textValue());
+            request.setAttribute("user",agent);
             return false;
         }
         return true;

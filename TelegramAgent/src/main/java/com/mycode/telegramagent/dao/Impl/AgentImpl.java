@@ -32,4 +32,19 @@ public class AgentImpl implements AgentDAO {
     public Agent getAgentByHashCode(int agencyName) {
         return agentRepo.getAgentByHashCode(agencyName);
     }
+
+    @Override
+    public Boolean checkAgencyName(String agencyName) {
+        return agentRepo.checkAgency(agencyName);
+    }
+
+    @Override
+    public Boolean checkCompanyName(String company) {
+        return agentRepo.checkCompany(company);
+    }
+
+    @Override
+    public Boolean checkEmail(String email) {
+        return agentRepo.checkEmail(email);
+    }
 }

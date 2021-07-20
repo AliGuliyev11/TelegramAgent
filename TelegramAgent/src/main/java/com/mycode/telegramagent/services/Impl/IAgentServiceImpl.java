@@ -2,7 +2,7 @@ package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
-import com.mycode.telegramagent.exceptions.EmailNotVerified;
+import com.mycode.telegramagent.exceptions.*;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.services.Interface.IAgentService;
 import lombok.SneakyThrows;
@@ -62,10 +62,9 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Override
     public AgentDto signup(AgentDto agentDto) {
+        checkUnique(agentDto);
         Keycloak keycloak = connectKeycloak();
-        //Call account service to save user
         UserRepresentation userRepresentation = userRepresentation(agentDto);
-        //Get realm
         RealmResource realmResource = keycloak.realm(realm);
         RolesResource rolesResource = realmResource.roles();
         UsersResource usersResource = realmResource.users();
@@ -74,23 +73,30 @@ public class IAgentServiceImpl implements IAgentService {
 //        userDTO.setStatus(response.getStatusInfo().toString());
         if (response.getStatus() == 201) {
             String userId = CreatedResponseUtil.getCreatedId(response);
-            // create password credential
             CredentialRepresentation passwordCred = passwordCred(agentDto);
             passwordCred.setTemporary(false);
 
             UserResource userResource = usersResource.get(userId);
 
             RoleRepresentation realmRoleUser = rolesResource.get(initialRole).toRepresentation();
-            // Assign realm role student to user
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
-            // Set password credential
             userResource.resetPassword(passwordCred);
-            //create newUser for database
             Agent agent = agentDAO.signup(agentDto);
 //            sendVerifyEmail(appUser.getEmail());
         }
 
         return agentDto;
+    }
+
+    private Boolean checkUnique(AgentDto agentDto) {
+        if (agentDAO.checkAgencyName(agentDto.getAgencyName())) {
+            throw new AgencyExist();
+        } else if (agentDAO.checkCompanyName(agentDto.getCompanyName())) {
+            throw new CompanyExist();
+        } else if (agentDAO.checkEmail(agentDto.getEmail())) {
+            throw new EmailAlreadyExist();
+        }
+        return true;
     }
 
     @SneakyThrows
@@ -105,7 +111,11 @@ public class IAgentServiceImpl implements IAgentService {
 
         Keycloak keycloak = connectKeycloak();
         RealmResource realmResource = keycloak.realm(realm);
-        UserRepresentation userRep = realmResource.users().search(agentDto.getEmail()).get(0);
+        UserRepresentation userRep = realmResource.users().search(agentDto.getEmail()).stream().findFirst().orElse(null);
+
+        if (userRep == null) {
+            throw new NotCreated();
+        }
         if (!userRep.isEmailVerified()) {
             throw new EmailNotVerified();
         }

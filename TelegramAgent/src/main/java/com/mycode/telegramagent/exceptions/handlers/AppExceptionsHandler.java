@@ -1,6 +1,6 @@
 package com.mycode.telegramagent.exceptions.handlers;
 
-import com.mycode.telegramagent.exceptions.EmailNotVerified;
+import com.mycode.telegramagent.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,10 +75,49 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {EmailNotVerified.class})
-    public ResponseEntity<Object> handleImageTypeRestrictionException(EmailNotVerified ex, WebRequest request) {
+    public ResponseEntity<Object> handleEmailVerificationException(EmailNotVerified ex, WebRequest request) {
 
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.FORBIDDEN,
                 ex.getLocalizedMessage(), "You must verify your email.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {NotCreated.class})
+    public ResponseEntity<Object> handleNotCreatedAgentException(NotCreated ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
+                ex.getLocalizedMessage(), "You must sign up.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {EmailAlreadyExist.class})
+    public ResponseEntity<Object> handleEmailExistException(EmailAlreadyExist ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This email already exist.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {CompanyExist.class})
+    public ResponseEntity<Object> handleCompanyExistException(CompanyExist ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This company already exist.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+    @ExceptionHandler(value = {AgencyExist.class})
+    public ResponseEntity<Object> handleAgencyExistException(AgencyExist ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This agency already exist.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
 
