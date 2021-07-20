@@ -47,4 +47,9 @@ public class AgentImpl implements AgentDAO {
     public Boolean checkEmail(String email) {
         return agentRepo.checkEmail(email);
     }
+
+    @Override
+    public Agent getAgentByEmail(String email) {
+        return agentRepo.getAgentByEmail(email);
+    }
 }

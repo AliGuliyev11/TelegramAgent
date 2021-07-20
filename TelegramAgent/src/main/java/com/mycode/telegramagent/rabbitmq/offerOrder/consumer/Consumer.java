@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-//@Service
+@Service
 public class Consumer {
 
     private final IOrderService orderService;
@@ -30,7 +30,7 @@ public class Consumer {
         orderService.deleteAllByUserId(uuid);
     }
 
-//    @RabbitListener(queues = "offerReplyQueue")
+    @RabbitListener(queues = "offerReplyQueue")
     @Transactional(propagation = Propagation.REQUIRED)
     public void offerReply(ReplyToOffer replyToOffer) {
         System.out.println(replyToOffer);

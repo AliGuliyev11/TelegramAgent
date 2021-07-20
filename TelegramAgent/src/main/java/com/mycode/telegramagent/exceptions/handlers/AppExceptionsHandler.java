@@ -133,6 +133,16 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(value = {EmailNotFound.class})
+    public ResponseEntity<Object> handleEmailNotFoundException(EmailNotFound ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,enter correct email.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
 
 
 }

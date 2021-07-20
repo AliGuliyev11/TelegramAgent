@@ -10,7 +10,11 @@ public interface AgentDAO {
     Agent getAgentByHashCode(int agencyName);
 
     Boolean checkAgencyName(String agencyName);
+
     Boolean checkCompanyName(String company);
+
     Boolean checkEmail(String email);
+
+    Agent getAgentByEmail(String email);
 
 }

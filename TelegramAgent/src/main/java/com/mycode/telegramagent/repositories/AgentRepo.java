@@ -18,4 +18,6 @@ public interface AgentRepo extends JpaRepository<Agent, Long> {
     @Query(value = "SELECT CASE WHEN EXISTS (SELECT * from agent a where a.email=:email)THEN true ELSE FALSE END",
             nativeQuery = true)
     Boolean checkEmail(String email);
+
+    Agent getAgentByEmail(String email);
 }

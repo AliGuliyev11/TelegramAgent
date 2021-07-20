@@ -1,12 +1,15 @@
 package com.mycode.telegramagent.services.Impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.dto.PasswordChangeDto;
 import com.mycode.telegramagent.exceptions.*;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.services.Interface.IAgentService;
+import com.mycode.telegramagent.services.email.EmailServiceImpl;
 import lombok.SneakyThrows;
+import org.apache.commons.text.RandomStringGenerator;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -32,20 +35,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mycode.telegramagent.utils.PasswordCreator.passwordGenerator;
+
 @Service
 public class IAgentServiceImpl implements IAgentService {
     Environment environment;
     AgentDAO agentDAO;
+    EmailServiceImpl emailService;
+    ObjectMapper objectMapper;
 //    VerifyTokenDAO vtDAO;
 //    ModelMapperComponent modelMapperComponent;
 //    SchedulerExecutorComponent schEx;
 
-    public IAgentServiceImpl(Environment environment, AgentDAO agentDAO) {
+
+    public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper) {
         this.environment = environment;
         this.agentDAO = agentDAO;
-//        this.vtDAO = vtDAO;
-//        this.modelMapperComponent = modelMapperComponent;
-//        this.schEx = schEx;
+        this.emailService = emailService;
+        this.objectMapper = objectMapper;
     }
 
     @Value("${keycloak.auth-server-url}")
@@ -92,7 +99,10 @@ public class IAgentServiceImpl implements IAgentService {
         if (!checkPassword(email, passwordChangeDto.getOldPass())) {
             throw new PasswordNotMatched();
         }
+        updateUserPassword(email, passwordChangeDto.getNewPass());
+    }
 
+    private void updateUserPassword(String email, String newPass) {
         Keycloak keycloak = connectKeycloak();
         RealmResource realmResource = keycloak.realm(realm);
         UserRepresentation userRep = realmResource.users().search(email).get(0);
@@ -100,9 +110,23 @@ public class IAgentServiceImpl implements IAgentService {
         CredentialRepresentation passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);
         passwordCred.setType(CredentialRepresentation.PASSWORD);
-        passwordCred.setValue(passwordChangeDto.getNewPass());
+        passwordCred.setValue(newPass);
         ur.resetPassword(passwordCred);
         ur.update(userRep);
+    }
+
+    @Override
+    public void forgotPassword(String email) {
+
+        Agent agent = agentDAO.getAgentByEmail(email);
+        System.out.println(agent);
+        if (agent == null) {
+            throw new EmailNotFound();
+        }
+        String url = " http://localhost:8082/api/v1/auth/confirmed/" + agent.getHashCode();
+        String text = "Please,click this link to confirm your email.Then we will send you password.This is confirmation " +
+                "link click <a href=" + url + ">here</a>";
+        emailService.sendSimpleMessage(email, "Forgot password", text);
     }
 
     private Boolean checkUnique(AgentDto agentDto) {
@@ -155,12 +179,21 @@ public class IAgentServiceImpl implements IAgentService {
         } catch (Exception e) {
             a = null;
         }
-        if (a== null) {
+        if (a == null) {
             return false;
         }
         return true;
     }
 
+    @Override
+    public void sendPassword(int agencyName) {
+
+        String password = passwordGenerator();
+        String text = "This is your new password:" + password;
+        Agent agent = agentDAO.getAgentByHashCode(agencyName);
+        updateUserPassword(agent.getEmail(), password);
+        emailService.sendSimpleMessage(agent.getEmail(), "Your new password", text);
+    }
 
     @Override
     public UserRepresentation userRepresentation(AgentDto agentDto) {

@@ -23,5 +23,9 @@ public interface IAgentService {
 
     void changePassword(String email, PasswordChangeDto passwordChangeDto);
 
+    void forgotPassword(String email);
+
     Keycloak connectKeycloak();
+
+    void sendPassword(int agencyName);
 }
