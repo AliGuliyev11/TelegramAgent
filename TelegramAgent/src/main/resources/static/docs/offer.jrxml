@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="Coffee_Landscape" pageWidth="800" pageHeight="600" columnWidth="535" leftMargin="20"
+              rightMargin="20" topMargin="20" bottomMargin="20" orientation="Landscape"
+              uuid="df013db5-f76e-44d3-b0df-bcbc46d93160">
+
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <style name="Title" fontName="Times New Roman" fontSize="50" isBold="true"/>
+    <style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+    <style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+    <style name="Detail" fontName="Arial" fontSize="12"/>
+    <parameter name="money" class="java.lang.String"></parameter>
+    <parameter name="moneyIcon" class="java.lang.String"></parameter>
+    <parameter name="date" class="java.lang.String"></parameter>
+    <parameter name="dateIcon" class="java.lang.String"></parameter>
+    <parameter name="description" class="java.lang.String"></parameter>
+    <parameter name="note" class="java.lang.String"></parameter>
+
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="description" class="java.lang.String"/>
+    <field name="dateRange" class="java.lang.String"/>
+    <field name="price" class="java.lang.Double"/>
+    <field name="note" class="java.lang.String"/>
+    <field name="AGENCY" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="136" splitType="Stretch">
+            <property name="com.jaspersoft.studio.layout"/>
+            <image>
+                <reportElement x="0" y="0" width="164" height="126" uuid="7836ad5d-91c8-428c-87ca-a1a8b2b8b137"/>
+                <imageExpression><![CDATA["src/main/resources/static/docs/tourApp.jpg"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement style="Title" x="270" y="0" width="263" height="62"
+                               uuid="bc1ce1da-8232-46ea-be55-cec4abb986dd"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{AGENCY}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="270" y="94" width="263" height="42" uuid="8240065e-64b6-4170-b5d9-6341598e7b35"/>
+                <textElement textAlignment="Center">
+                    <font size="20"/>
+                </textElement>
+                <text><![CDATA[Tour App]]></text>
+            </staticText>
+            <image>
+                <reportElement x="633" y="-73" width="219" height="209" uuid="4aa6f4d1-27dc-4b34-9227-59e19ce2c959"/>
+                <imageExpression><![CDATA["src/main/resources/static/docs/tourApp.jpg"]]></imageExpression>
+            </image>
+        </band>
+    </title>
+
+
+    <pageHeader>
+        <band splitType="Stretch"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="51" splitType="Stretch">
+            <line>
+                <reportElement positionType="FixRelativeToBottom" x="0" y="15" width="802" height="1"
+                               uuid="e9d2002a-c8ee-4649-a258-640dad29110c"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#999999"/>
+                </graphicElement>
+            </line>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="150" splitType="Stretch">
+
+            <textField>
+                <reportElement forecolor="#000000" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="210" y="0" width="100"
+                               height="20"/>
+                <textElement>
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{money}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement forecolor="#279c4e" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="270" y="0" width="100"
+                               height="20"/>
+                <textElement>
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{moneyIcon}]]></textFieldExpression>
+            </textField>
+
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+
+                <reportElement positionType="Float" x="270" y="0" width="100" height="20"
+                               uuid="8240065e-64b6-4170-b5d9-6341598e7b35"/>
+                <textElement verticalAlignment="Middle" textAlignment="Center">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{price}]]></textFieldExpression>
+            </textField>
+
+
+
+
+
+            <textField>
+                <reportElement forecolor="#000000" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="360" y="0" width="100"
+                               height="20"/>
+                <textElement>
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{date}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement forecolor="#cf5042" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="400" y="0" width="100"
+                               height="20"/>
+                <textElement>
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{dateIcon}]]></textFieldExpression>
+            </textField>
+
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+
+                <reportElement positionType="Float" x="360" y="0" width="300" height="20"
+                               uuid="8240065e-64b6-4170-b5d9-6341598e7b35"/>
+                <textElement verticalAlignment="Middle" textAlignment="Center">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{dateRange}]]></textFieldExpression>
+            </textField>
+
+
+            <textField>
+                <reportElement forecolor="#000000" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="360" y="30" width="100"
+                               height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement positionType="Float" stretchType="NoStretch" x="0" y="60" width="750" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{description}]]></textFieldExpression>
+            </textField>
+
+
+            <textField  textAdjust="StretchHeight">
+                <reportElement positionType="Float" forecolor="#000000" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="360" y="90" width="100"
+                               height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{note}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement positionType="Float" stretchType="NoStretch" x="0" y="120" width="750" height="20"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{note}]]></textFieldExpression>
+            </textField>
+
+
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="6" splitType="Stretch">
+            <line>
+                <reportElement positionType="FixRelativeToBottom" x="0" y="3" width="802" height="1"
+                               uuid="fa5e88d5-a011-4e32-8f12-ce923f903111"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#999999"/>
+                </graphicElement>
+            </line>
+        </band>
+    </columnFooter>
+
+
+    <pageFooter>
+        <band height="25" splitType="Stretch">
+            <frame>
+                <reportElement mode="Opaque" x="-20" y="0" width="843" height="24" forecolor="#7e4099"
+                               backcolor="#7e4099" uuid="5d8169bd-4a75-48c8-8a68-6d3ad5ba9402"/>
+
+                <textField pattern="dd.MM.yyyy">
+                    <reportElement style="Column header" x="22" y="1" width="197" height="20" forecolor="#FFFFFF"
+                                   uuid="fbce24bb-3cb1-44a3-8eec-8c067ddbe5b5"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="10" isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+                </textField>
+            </frame>
+        </band>
+    </pageFooter>
+    <summary>
+        <band splitType="Stretch"/>
+    </summary>
+</jasperReport>

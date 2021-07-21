@@ -46,12 +46,12 @@ public class OrderDaoImpl implements OrderDAO {
         return orderRepo.findById(id).get();
     }
 
-    @Override
-    public void deleteAllByUserId(String uuid) {
-        if (orderRepo.getOrderByUserId(uuid) != null) {
-            orderRepo.deleteAllByUserId(uuid);
-        }
-    }
+//    @Override
+//    public void deleteAllByUserId(String uuid) {
+//        if (orderRepo.getOrderByUserId(uuid) != null) {
+//            orderRepo.deleteAllByUserId(uuid);
+//        }
+//    }
 
     @Override
     public List<UserRequest> getAllRequests(String email) {

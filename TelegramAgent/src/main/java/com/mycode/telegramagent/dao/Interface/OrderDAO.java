@@ -8,6 +8,6 @@ import java.util.List;
 public interface OrderDAO {
     void addOrder(Order order);
     UserRequest getOrderById(Long id);
-    void deleteAllByUserId(String uuid);
+//    void deleteAllByUserId(String uuid);
     List<UserRequest> getAllRequests(String email);
 }

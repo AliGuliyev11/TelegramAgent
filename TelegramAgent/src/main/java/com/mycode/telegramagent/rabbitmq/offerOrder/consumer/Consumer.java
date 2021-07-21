@@ -27,7 +27,7 @@ public class Consumer {
     @Transactional(propagation = Propagation.REQUIRED)
     public void stopMessageSendOrder(String uuid) {
         System.out.println(uuid);
-        orderService.deleteAllByUserId(uuid);
+//        orderService.deleteAllByUserId(uuid);
     }
 
     @RabbitListener(queues = "offerReplyQueue")

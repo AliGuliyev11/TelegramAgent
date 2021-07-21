@@ -71,7 +71,7 @@ public class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter impleme
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/api/v1/offer/get").permitAll()
+                .antMatchers("/api/v1/offer/**").permitAll()
                 .antMatchers("/api/v1/agent/**").permitAll()
                 .antMatchers("/api/v1/request/**").permitAll()
 //                .antMatchers("/api/v1/auth/confirm/*").hasRole(notVerified)

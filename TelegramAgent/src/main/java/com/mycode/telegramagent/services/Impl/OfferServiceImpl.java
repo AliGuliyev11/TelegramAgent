@@ -1,6 +1,7 @@
 package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.OfferDAO;
+import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,8 @@ public class OfferServiceImpl implements IOfferService {
     }
 
     @Override
-    public Offer saveOffer(String userId, String agencyName, String agencyNumber, MultipartFile file) {
-        return offerDAO.saveOffer(userId, agencyName, agencyNumber, file);
+    public Offer saveOffer(String userId, String email, OfferDto offerDto) {
+        return offerDAO.saveOffer(userId, email, offerDto);
     }
 
     @Override

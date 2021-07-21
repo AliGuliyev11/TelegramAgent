@@ -7,6 +7,9 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import java.io.File;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -19,11 +22,14 @@ public class Offer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(nullable = false)
-    String userId;
-    File file;
-    @Column(nullable = false)
-    String agencyName;
-    @Column(nullable = false)
-    String agencyNumber;
+    String description;
+    Date startDate;
+    Date endDate;
+    String note;
+    Double price;
+    @OneToOne
+    UserRequest userRequest;
+    @ManyToOne
+    Agent agent;
+
 }
