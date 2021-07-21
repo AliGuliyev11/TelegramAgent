@@ -7,6 +7,8 @@ public interface AgentDAO {
 
     Agent signup(AgentDto agentDto);
 
+    Agent save(Agent agent);
+
     Agent getAgentByHashCode(int agencyName);
 
     Boolean checkAgencyName(String agencyName);

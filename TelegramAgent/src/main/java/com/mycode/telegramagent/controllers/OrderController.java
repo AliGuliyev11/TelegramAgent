@@ -1,6 +1,7 @@
 package com.mycode.telegramagent.controllers;
 
-import com.mycode.telegramagent.models.Order;
+import com.mycode.telegramagent.dto.Order;
+import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class OrderController {
     }
 
     @GetMapping("/showAll")
-    public List<Order> getAllOrders(){
+    public List<UserRequest> getAllOrders(){
         return service.getAllOrders();
     }
 

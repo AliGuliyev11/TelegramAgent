@@ -24,8 +24,14 @@ public class AgentImpl implements AgentDAO {
         Agent agent=objectMapper.convertValue(agentDto,Agent.class);
         String hash=String.valueOf(agent.getAgencyName().hashCode()).replaceAll("-","");
         agent.setHashCode(Integer.valueOf(hash));
+        agent.setIsVerified(false);
         agentRepo.save(agent);
         return agent;
+    }
+
+    @Override
+    public Agent save(Agent agent) {
+        return agentRepo.save(agent);
     }
 
     @Override

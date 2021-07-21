@@ -1,4 +1,4 @@
-package com.mycode.telegramagent.models;
+package com.mycode.telegramagent.dto;
 
 import com.mycode.telegramagent.enums.Languages;
 import lombok.*;
@@ -11,14 +11,12 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Entity(name = "userOrder")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order implements Serializable {
 
-    @Id
     Long id;
     Languages language;
     String Ordertravel;
@@ -31,7 +29,6 @@ public class Order implements Serializable {
     Long chatId;
     String userId;
     Date createdDate;
-    Date expiredDate;
 
     @Override
     public String toString() {
@@ -48,7 +45,6 @@ public class Order implements Serializable {
                 ", chatId=" + chatId +
                 ", userId='" + userId + '\'' +
                 ", createdDate=" + createdDate +
-                ", expiredDate=" + expiredDate +
                 '}';
     }
 }

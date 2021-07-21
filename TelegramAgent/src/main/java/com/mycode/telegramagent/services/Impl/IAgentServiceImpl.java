@@ -223,7 +223,10 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Override
     public Boolean verifyUser(int agencyName) {
-        String email = agentDAO.getAgentByHashCode(agencyName).getEmail();
+        Agent agent=agentDAO.getAgentByHashCode(agencyName);
+        String email = agent.getEmail();
+        agent.setIsVerified(true);
+        agentDAO.save(agent);
         Keycloak keycloak = connectKeycloak();
         RealmResource realmResource = keycloak.realm(realm);
         RolesResource rolesResource = realmResource.roles();
@@ -237,12 +240,7 @@ public class IAgentServiceImpl implements IAgentService {
         ur.update(userRep);
         return true;
     }
-//
-//    @Override
-//    public void sendVerifyEmail(String email) {
-//        AppUser appUser = userDAO.getUserByEmail(email);
-//        schEx.runEmailVerification(appUser);
-//    }
+
 
     @Override
     public Keycloak connectKeycloak() {

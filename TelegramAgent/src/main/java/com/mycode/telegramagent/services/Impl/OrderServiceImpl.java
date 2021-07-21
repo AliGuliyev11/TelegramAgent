@@ -1,7 +1,8 @@
 package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
-import com.mycode.telegramagent.models.Order;
+import com.mycode.telegramagent.dto.Order;
+import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public Order getOrderById(Long id) {
+    public UserRequest getOrderById(Long id) {
         return orderDAO.getOrderById(id);
     }
 
@@ -32,7 +33,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<Order> getAllOrders() {
+    public List<UserRequest> getAllOrders() {
         return orderDAO.getAllOrders();
     }
 }

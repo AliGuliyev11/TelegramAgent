@@ -4,6 +4,8 @@ import com.mycode.telegramagent.models.Agent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface AgentRepo extends JpaRepository<Agent, Long> {
     Agent getAgentByHashCode(int agencyName);
 
@@ -20,4 +22,6 @@ public interface AgentRepo extends JpaRepository<Agent, Long> {
     Boolean checkEmail(String email);
 
     Agent getAgentByEmail(String email);
+    @Query(value = "SELECT * from agent a WHERE a.is_verified=true",nativeQuery = true)
+    List<Agent> getVerifiedAgents();
 }
