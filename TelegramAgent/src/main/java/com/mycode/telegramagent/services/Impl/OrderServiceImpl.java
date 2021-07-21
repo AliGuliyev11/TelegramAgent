@@ -33,7 +33,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<UserRequest> getAllOrders() {
-        return orderDAO.getAllOrders();
+    public List<UserRequest> getAllRequests(String email) {
+        return orderDAO.getAllRequests(email);
     }
 }

@@ -39,7 +39,7 @@ public class UserRequest {
     RequestStatus requestStatus;
     @Enumerated(EnumType.STRING)
     AgentRequestStatus agentRequestStatus;
-    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     Agent agent;
 
 }

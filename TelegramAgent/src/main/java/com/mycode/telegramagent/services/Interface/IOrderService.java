@@ -9,5 +9,5 @@ public interface IOrderService {
     void addOrder(Order order);
     UserRequest getOrderById(Long id);
     void deleteAllByUserId(String uuid);
-    List<UserRequest> getAllOrders();
+    List<UserRequest> getAllRequests(String email);
 }

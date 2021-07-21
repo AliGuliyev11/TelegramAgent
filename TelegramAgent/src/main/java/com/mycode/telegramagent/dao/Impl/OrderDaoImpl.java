@@ -54,7 +54,7 @@ public class OrderDaoImpl implements OrderDAO {
     }
 
     @Override
-    public List<UserRequest> getAllOrders() {
-        return orderRepo.findAll();
+    public List<UserRequest> getAllRequests(String email) {
+        return orderRepo.getAllActiveRequestByAgent(email);
     }
 }

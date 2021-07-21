@@ -21,13 +21,6 @@ public class OfferController {
     }
 
 
-    @GetMapping("/get")
-    public String er(@RequestAttribute("user") AgentDto agentDto) {
-        System.out.println("qwrqr"+agentDto.getEmail());
-        return "Salam";
-    }
-
-
     @SneakyThrows
     @PostMapping("/{userId}")
     public Offer sendOffer(@PathVariable("userId") String userId, @RequestParam("agencyName") String agencyName,
