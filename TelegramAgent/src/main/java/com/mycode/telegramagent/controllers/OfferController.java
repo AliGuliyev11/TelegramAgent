@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/offer")
@@ -29,5 +30,10 @@ public class OfferController {
                           @Valid @RequestBody OfferDto offerDto) {
 
         return offerService.saveOffer(userId, agentDto.getEmail(), offerDto);
+    }
+
+    @GetMapping("/show-offers")
+    public List<Offer> getAgentOffers(@RequestAttribute("user") AgentDto agentDto) {
+        return offerService.getAgentOffers(agentDto.getEmail());
     }
 }

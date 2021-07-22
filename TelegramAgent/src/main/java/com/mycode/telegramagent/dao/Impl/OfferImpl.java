@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.mycode.telegramagent.utils.OfferToJasper.offerToJasper;
 
@@ -85,6 +86,11 @@ public class OfferImpl implements OfferDAO {
     @Override
     public UserRequest getRequestByUUIDAndEmail(String uuid, String email) {
         return userRequest.getOrderByUserId(uuid, email);
+    }
+
+    @Override
+    public List<Offer> getAgentOffers(String email) {
+        return offerRepo.getOffersByAgent_Email(email);
     }
 
     @SneakyThrows

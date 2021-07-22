@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.mycode.telegramagent.utils.Validation.validation;
@@ -46,7 +47,10 @@ public class OfferServiceImpl implements IOfferService {
         return offerDAO.saveOffer(userId, email, offerDto);
     }
 
-
+    @Override
+    public List<Offer> getAgentOffers(String email) {
+        return offerDAO.getAgentOffers(email);
+    }
 
     @Override
     public Offer getOfferById(Long id) {
