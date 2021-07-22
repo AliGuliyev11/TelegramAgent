@@ -9,10 +9,13 @@ import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.repositories.AgentRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.mycode.telegramagent.utils.ExpiredDateGenerator.getExpiredDate;
 
 @Component
 public class OrderDaoImpl implements OrderDAO {
@@ -26,13 +29,21 @@ public class OrderDaoImpl implements OrderDAO {
         this.agentRepo = agentRepo;
     }
 
+    @Value("${work.begin.time}")
+    String beginTime;
+    @Value("${work.end.time}")
+    String endTime;
+    @Value("${expired.time}")
+    int expiredTime;
+
     @Override
     public void addOrder(Order order) {
         UserRequest userRequest = modelMapper.map(order, UserRequest.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         List<Agent> agentList = agentRepo.getVerifiedAgents();
+        LocalDateTime expiredDate=getExpiredDate(beginTime,endTime,expiredTime);
         for (var item : agentList) {
-            userRequest.setExpiredDate(LocalDateTime.now().plusHours(8));
+            userRequest.setExpiredDate(expiredDate);
             userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
             userRequest.setRequestStatus(RequestStatus.Active);
             userRequest.setAgent(item);
