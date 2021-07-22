@@ -27,7 +27,17 @@ public class OrderServiceImpl implements IOrderService {
         return orderDAO.getOrderById(id);
     }
 
-//    @Override
+    @Override
+    public UserRequest addToArchive(String email, Long id) {
+        return orderDAO.addToArchive(email, id);
+    }
+
+    @Override
+    public List<UserRequest> getAllArchive(String email) {
+        return orderDAO.getAllArchive(email);
+    }
+
+    //    @Override
 //    public void deleteAllByUserId(String uuid) {
 //        orderDAO.deleteAllByUserId(uuid);
 //    }

@@ -10,4 +10,6 @@ public interface OrderDAO {
     UserRequest getOrderById(Long id);
 //    void deleteAllByUserId(String uuid);
     List<UserRequest> getAllRequests(String email);
+    UserRequest addToArchive(String email,Long id);
+    List<UserRequest> getAllArchive(String email);
 }

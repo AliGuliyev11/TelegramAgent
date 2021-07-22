@@ -23,6 +23,16 @@ public class RequestController {
         return service.getAllRequests(agentDto.getEmail());
     }
 
+    @PutMapping("/add-archive/{id}")
+    public UserRequest addToArchive(@PathVariable("id") Long id,@RequestAttribute("user") AgentDto agentDto){
+        return service.addToArchive(agentDto.getEmail(),id);
+    }
+
+    @GetMapping("/show-archive")
+    public List<UserRequest> getAllArchive(@RequestAttribute("user") AgentDto agentDto){
+        return service.getAllArchive(agentDto.getEmail());
+    }
+
 
 
 

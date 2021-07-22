@@ -30,8 +30,8 @@ public class OrderDaoImpl implements OrderDAO {
     public void addOrder(Order order) {
         UserRequest userRequest = modelMapper.map(order, UserRequest.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        List<Agent> agentList=agentRepo.getVerifiedAgents();
-        for (var item:agentList){
+        List<Agent> agentList = agentRepo.getVerifiedAgents();
+        for (var item : agentList) {
             userRequest.setExpiredDate(LocalDateTime.now().plusHours(8));
             userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
             userRequest.setRequestStatus(RequestStatus.Active);
@@ -39,6 +39,19 @@ public class OrderDaoImpl implements OrderDAO {
             orderRepo.save(userRequest);
 
         }
+    }
+
+    @Override
+    public UserRequest addToArchive(String email, Long id) {
+        UserRequest userRequest =orderRepo.getUserRequestByIdAndAgent_Email(id, email);
+        userRequest.setRequestStatus(RequestStatus.De_Active);
+        orderRepo.save(userRequest);
+        return userRequest;
+    }
+
+    @Override
+    public List<UserRequest> getAllArchive(String email) {
+        return orderRepo.getAllArchivedRequests(email);
     }
 
     @Override
