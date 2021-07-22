@@ -4,6 +4,7 @@ import com.mycode.telegramagent.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -138,6 +139,56 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
                 ex.getLocalizedMessage(), "Please,enter correct email.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {YouAlreadyMakeOffer.class})
+    public ResponseEntity<Object> handleMakeOfferException(YouAlreadyMakeOffer ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Already make offer.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {RequestExpired.class})
+    public ResponseEntity<Object> handleRequestExpiredException(RequestExpired ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This request expired.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {RequestNotFound.class})
+    public ResponseEntity<Object> handleRequestNotFoundException(RequestNotFound ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This request not found.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {OfferValidation.class})
+    public ResponseEntity<Object> handleOfferValidationException(OfferValidation ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Except note,other fields is required.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {OfferPriceZero.class})
+    public ResponseEntity<Object> handleOfferPriceZeroException(OfferPriceZero ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Price mustn't be zero or minus value.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
 

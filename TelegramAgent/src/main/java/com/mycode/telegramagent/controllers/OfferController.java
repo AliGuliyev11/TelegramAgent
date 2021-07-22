@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "api/v1/offer")
@@ -25,7 +26,7 @@ public class OfferController {
     @SneakyThrows
     @PostMapping("/{userId}")
     public Offer sendOffer(@RequestAttribute("user") AgentDto agentDto, @PathVariable("userId") String userId,
-                           @RequestBody OfferDto offerDto) {
+                          @Valid @RequestBody OfferDto offerDto) {
 
         return offerService.saveOffer(userId, agentDto.getEmail(), offerDto);
     }

@@ -4,6 +4,7 @@ import com.mycode.telegramagent.dao.Interface.OfferDAO;
 import com.mycode.telegramagent.dto.JasperDto;
 import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.RabbitOffer;
+import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.Offer;
@@ -17,7 +18,10 @@ import lombok.SneakyThrows;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,21 +58,29 @@ public class OfferImpl implements OfferDAO {
     }
 
     @SneakyThrows
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Offer saveOffer(String uuid, String email, OfferDto offerDto) {
         Agent agent = agentRepo.getAgentByEmail(email);
-        UserRequest order = userRequest.getOrderByUserId(uuid,email);
+        UserRequest order = userRequest.getOrderByUserId(uuid, email);
+        order.setAgentRequestStatus(AgentRequestStatus.Offer_Made);
         JasperDto jasperDto = offerToJasper(agent.getAgencyName(), offerDto);
-        textToImage(jasperDto,order.getLanguage());
+        textToImage(jasperDto, order.getLanguage());
         File photo = new File("src/main/resources/static/docs/offer.jpg");
         Offer offer = modelMapper.map(offerDto, Offer.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         offer.setAgent(agent);
         offer.setUserRequest(order);
         Offer savedOffer = offerRepo.save(offer);
-        RabbitOffer rabbitOffer= RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
+        RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
         offerService.send(rabbitOffer);
+        userRequest.save(order);
         return savedOffer;
+    }
+
+    @Override
+    public UserRequest getRequestByUUIDAndEmail(String uuid, String email) {
+        return userRequest.getOrderByUserId(uuid, email);
     }
 
     @SneakyThrows
@@ -76,12 +88,14 @@ public class OfferImpl implements OfferDAO {
         File file = ResourceUtils.getFile("src/main/resources/static/docs/offer.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         HashMap<String, Object> parameter = new HashMap<String, Object>();
-        parameter.put("money", messageService.getMessage("jasper.price",languages));
+        parameter.put("money", messageService.getMessage("jasper.price", languages));
         parameter.put("moneyIcon", "\uD83D\uDCB5");
-        parameter.put("date", messageService.getMessage("jasper.date",languages));
+        parameter.put("date", messageService.getMessage("jasper.date", languages));
         parameter.put("dateIcon", "\uD83D\uDCC5");
-        parameter.put("description", messageService.getMessage("jasper.description",languages));
-        parameter.put("note", messageService.getMessage("jasper.note",languages) );
+        parameter.put("description", messageService.getMessage("jasper.description", languages));
+        if (jasperDto.getNote() != null) {
+            parameter.put("note", messageService.getMessage("jasper.note", languages));
+        }
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(Collections.singleton(jasperDto));
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);
 

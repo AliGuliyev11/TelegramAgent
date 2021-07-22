@@ -155,7 +155,7 @@
             </textField>
 
 
-            <textField  textAdjust="StretchHeight">
+            <textField isBlankWhenNull="true"  textAdjust="StretchHeight">
                 <reportElement positionType="Float" forecolor="#000000" uuid="8240065e-64b6-4170-b5d9-6341598e7b35" x="360" y="90" width="100"
                                height="20"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -164,7 +164,7 @@
                 <textFieldExpression><![CDATA[$P{note}]]></textFieldExpression>
             </textField>
 
-            <textField textAdjust="StretchHeight">
+            <textField isBlankWhenNull="true" textAdjust="StretchHeight">
                 <reportElement positionType="Float" stretchType="NoStretch" x="0" y="120" width="750" height="20"/>
                 <textElement>
                     <font isBold="true"/>
