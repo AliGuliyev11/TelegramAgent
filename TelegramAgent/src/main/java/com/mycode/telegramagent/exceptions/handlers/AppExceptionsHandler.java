@@ -194,6 +194,36 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(value = {DateFormat.class})
+    public ResponseEntity<Object> handleDateFormatException(DateFormat ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,add date in year.month.day format(Ex. 2021-07-18).");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {OfferDateBeforeNow.class})
+    public ResponseEntity<Object> handleDateBeforeException(OfferDateBeforeNow ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,add date present or future tense.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {EndDateBeforeStart.class})
+    public ResponseEntity<Object> handleEndDateBeforeException(EndDateBeforeStart ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,add correct end date.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
 
 
 }

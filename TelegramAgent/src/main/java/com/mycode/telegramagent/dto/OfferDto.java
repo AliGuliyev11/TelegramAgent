@@ -17,9 +17,9 @@ public class OfferDto {
     @NotNull
     String description;
     @NotNull
-    Date startDate;
+    String startDate;
     @NotNull
-    Date endDate;
+    String endDate;
     String note;
     @NotNull
     Double price;

@@ -31,9 +31,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 import static com.mycode.telegramagent.utils.OfferToJasper.offerToJasper;
@@ -67,6 +69,8 @@ public class OfferImpl implements OfferDAO {
         JasperDto jasperDto = offerToJasper(agent.getAgencyName(), offerDto);
         textToImage(jasperDto, order.getLanguage());
         File photo = new File("src/main/resources/static/docs/offer.jpg");
+
+
         Offer offer = modelMapper.map(offerDto, Offer.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         offer.setAgent(agent);
