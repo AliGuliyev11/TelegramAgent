@@ -11,6 +11,7 @@ import com.mycode.telegramagent.repositories.OrderRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,6 +59,12 @@ public class OrderDaoImpl implements OrderDAO {
         userRequest.setRequestStatus(RequestStatus.De_Active);
         orderRepo.save(userRequest);
         return userRequest;
+    }
+
+    @Transactional
+    @Override
+    public void requestChecker(String date) {
+        orderRepo.checkAndExpireRequest(date);
     }
 
     @Override

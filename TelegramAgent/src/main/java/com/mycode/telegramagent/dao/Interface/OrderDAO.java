@@ -12,4 +12,5 @@ public interface OrderDAO {
     List<UserRequest> getAllRequests(String email);
     UserRequest addToArchive(String email,Long id);
     List<UserRequest> getAllArchive(String email);
+    void requestChecker(String date);
 }
