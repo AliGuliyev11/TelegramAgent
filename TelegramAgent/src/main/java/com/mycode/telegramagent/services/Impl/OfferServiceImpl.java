@@ -32,7 +32,6 @@ public class OfferServiceImpl implements IOfferService {
     @Override
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
-
         if (userRequest == null) {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||
