@@ -4,6 +4,7 @@ import com.mycode.telegramagent.dao.Interface.OfferDAO;
 import com.mycode.telegramagent.dto.JasperDto;
 import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.RabbitOffer;
+import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.models.Agent;
@@ -79,8 +80,20 @@ public class OfferImpl implements OfferDAO {
         Offer savedOffer = offerRepo.save(offer);
         RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
         offerService.send(rabbitOffer);
+        order.setOffer(savedOffer);
         userRequest.save(order);
         return savedOffer;
+    }
+
+    @Override
+    public void offerAccepted(ReplyToOffer replyToOffer) {
+        Offer offer=offerRepo.findById(replyToOffer.getOfferId()).get();
+        offer.setAcceptedDate(new Date());
+        offer.setPhoneNumber(replyToOffer.getPhoneNumber());
+        UserRequest userRequest=offer.getUserRequest();
+        userRequest.setAgentRequestStatus(AgentRequestStatus.Accepted);
+        offer.setUserRequest(userRequest);
+        offerRepo.save(offer);
     }
 
     @Override

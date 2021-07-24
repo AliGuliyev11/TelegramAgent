@@ -1,6 +1,7 @@
 package com.mycode.telegramagent.models;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -28,8 +29,11 @@ public class Offer implements Serializable {
     String note;
     Double price;
     @OneToOne
+    @JsonManagedReference
     UserRequest userRequest;
     @ManyToOne
     Agent agent;
+    Date acceptedDate;
+    String phoneNumber;
 
 }

@@ -1,5 +1,7 @@
 package com.mycode.telegramagent.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.enums.RequestStatus;
@@ -41,5 +43,8 @@ public class UserRequest {
     AgentRequestStatus agentRequestStatus;
     @ManyToOne(cascade = CascadeType.PERSIST)
     Agent agent;
+    @OneToOne
+    @JsonBackReference
+    Offer offer;
 
 }

@@ -43,10 +43,6 @@ public class IAgentServiceImpl implements IAgentService {
     AgentDAO agentDAO;
     EmailServiceImpl emailService;
     ObjectMapper objectMapper;
-//    VerifyTokenDAO vtDAO;
-//    ModelMapperComponent modelMapperComponent;
-//    SchedulerExecutorComponent schEx;
-
 
     public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper) {
         this.environment = environment;
