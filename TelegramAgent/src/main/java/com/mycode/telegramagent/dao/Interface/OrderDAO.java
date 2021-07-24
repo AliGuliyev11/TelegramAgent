@@ -13,5 +13,5 @@ public interface OrderDAO {
     List<UserRequest> getAllArchive(String email);
     void requestChecker(String date);
     void requestStatusDeActive(String uuid);
-
+    UserRequest getUserRequestByIdAndAgentEmail(Long id,String email);
 }

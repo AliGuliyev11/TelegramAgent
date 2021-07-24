@@ -21,7 +21,6 @@ import static com.mycode.telegramagent.utils.Validation.validation;
 public class OfferServiceImpl implements IOfferService {
 
 
-
     private final OfferDAO offerDAO;
 
     public OfferServiceImpl(OfferDAO offerDAO) {
@@ -40,7 +39,7 @@ public class OfferServiceImpl implements IOfferService {
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
             throw new RequestExpired();
         }
-        checkStartDate(offerDto.getStartDate(),userRequest.getOrderdate());
+        checkStartDate(offerDto.getStartDate(), userRequest.getOrderdate());
         validation(offerDto);
 
 
@@ -56,16 +55,21 @@ public class OfferServiceImpl implements IOfferService {
     private void checkStartDate(String startDate, Date orderDate) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date start = simpleDateFormat.parse(startDate);
-        String a=simpleDateFormat.format(orderDate);
-        Date requestedDate=simpleDateFormat.parse(a);
+        String a = simpleDateFormat.format(orderDate);
+        Date requestedDate = simpleDateFormat.parse(a);
         if (start.before(requestedDate) && !simpleDateFormat.format(orderDate).equals(startDate)) {
-            throw new CheckStartDate("Your start date must be equal or after "+simpleDateFormat.format(orderDate));
+            throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(orderDate));
         }
     }
 
     @Override
     public List<Offer> getAgentOffers(String email) {
-        return offerDAO.getAgentOffers(email);
+        List<Offer> offers = offerDAO.getAgentOffers(email);
+        if (offers.isEmpty()) {
+            throw new NotAnyOffer();
+        }
+
+        return offers;
     }
 
     @Override

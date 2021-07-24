@@ -61,6 +61,11 @@ public class OrderDaoImpl implements OrderDAO {
         return userRequest;
     }
 
+    @Override
+    public UserRequest getUserRequestByIdAndAgentEmail(Long id, String email) {
+        return orderRepo.getUserRequestByIdAndAgent_Email(id, email);
+    }
+
     @Transactional
     @Override
     public void requestChecker(String date) {

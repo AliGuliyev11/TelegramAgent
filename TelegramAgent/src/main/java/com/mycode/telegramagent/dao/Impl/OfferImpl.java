@@ -3,6 +3,7 @@ package com.mycode.telegramagent.dao.Impl;
 import com.mycode.telegramagent.dao.Interface.OfferDAO;
 import com.mycode.telegramagent.dto.JasperDto;
 import com.mycode.telegramagent.dto.OfferDto;
+import com.mycode.telegramagent.dto.RabbitOffer;
 import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.models.Agent;
@@ -61,17 +62,17 @@ public class OfferImpl implements OfferDAO {
         JasperDto jasperDto = offerToJasper(agent.getAgencyName(), offerDto);
         textToImage(jasperDto, order.getLanguage(),messageService,location,resourceFile);
         File photo = new File(location);
-//
-//        Offer offer = modelMapper.map(offerDto, Offer.class);
-//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-//        offer.setAgent(agent);
-//        offer.setUserRequest(order);
-//        Offer savedOffer = offerRepo.save(offer);
-//        RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
-//        offerService.send(rabbitOffer);
-//        order.setOffer(savedOffer);
-//        userRequest.save(order);
-        return null;
+
+        Offer offer = modelMapper.map(offerDto, Offer.class);
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        offer.setAgent(agent);
+        offer.setUserRequest(order);
+        Offer savedOffer = offerRepo.save(offer);
+        RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
+        offerService.send(rabbitOffer);
+        order.setOffer(savedOffer);
+        userRequest.save(order);
+        return savedOffer;
     }
 
     @Override

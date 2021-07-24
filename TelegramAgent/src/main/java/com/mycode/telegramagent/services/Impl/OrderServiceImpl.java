@@ -2,6 +2,8 @@ package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
 import com.mycode.telegramagent.dto.Order;
+import com.mycode.telegramagent.exceptions.NotAnyRequest;
+import com.mycode.telegramagent.exceptions.RequestNotFound;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.stereotype.Service;
@@ -29,12 +31,22 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public UserRequest addToArchive(String email, Long id) {
+        UserRequest userRequest = orderDAO.getUserRequestByIdAndAgentEmail(id, email);
+        if (userRequest==null){
+            throw new RequestNotFound();
+        }
+
         return orderDAO.addToArchive(email, id);
     }
 
+
     @Override
     public List<UserRequest> getAllArchive(String email) {
-        return orderDAO.getAllArchive(email);
+        List<UserRequest> userRequests=orderDAO.getAllArchive(email);
+        if (userRequests.isEmpty()) {
+            throw new NotAnyRequest();
+        }
+        return userRequests;
     }
 
     @Override
@@ -44,6 +56,10 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<UserRequest> getAllRequests(String email) {
-        return orderDAO.getAllRequests(email);
+        List<UserRequest> userRequests = orderDAO.getAllRequests(email);
+        if (userRequests.isEmpty()) {
+            throw new NotAnyRequest();
+        }
+        return userRequests;
     }
 }
