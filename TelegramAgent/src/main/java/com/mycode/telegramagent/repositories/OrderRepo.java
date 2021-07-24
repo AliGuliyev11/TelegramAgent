@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderRepo extends JpaRepository<UserRequest, Long> {
-    void deleteAllByUserId(String uuid);
+
+    UserRequest getUserRequestByUserId(String uuid);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email " +
             "and u.user_id=:uuid", nativeQuery = true)

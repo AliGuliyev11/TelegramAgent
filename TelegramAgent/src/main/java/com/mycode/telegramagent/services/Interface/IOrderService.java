@@ -8,8 +8,8 @@ import java.util.List;
 public interface IOrderService {
     void addOrder(Order order);
     UserRequest getOrderById(Long id);
-//    void deleteAllByUserId(String uuid);
     List<UserRequest> getAllRequests(String email);
     UserRequest addToArchive(String email,Long id);
     List<UserRequest> getAllArchive(String email);
+    void requestStatusDeActive(String uuid);
 }

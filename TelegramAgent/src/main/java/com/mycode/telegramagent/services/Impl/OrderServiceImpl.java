@@ -37,10 +37,10 @@ public class OrderServiceImpl implements IOrderService {
         return orderDAO.getAllArchive(email);
     }
 
-    //    @Override
-//    public void deleteAllByUserId(String uuid) {
-//        orderDAO.deleteAllByUserId(uuid);
-//    }
+    @Override
+    public void requestStatusDeActive(String uuid) {
+        orderDAO.requestStatusDeActive(uuid);
+    }
 
     @Override
     public List<UserRequest> getAllRequests(String email) {
