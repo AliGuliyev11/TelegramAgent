@@ -5,7 +5,10 @@ import com.mycode.telegramagent.exceptions.*;
 import lombok.SneakyThrows;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
 public class Validation {
@@ -31,12 +34,40 @@ public class Validation {
         Date endDate = simpleDateFormat.parse(offerDto.getEndDate());
         Date date = new Date();
         String d = simpleDateFormat.format(date);
-        if (startDate.before(date) && ! simpleDateFormat.format(startDate).equals(d)) {
+        if (startDate.before(date) && !simpleDateFormat.format(startDate).equals(d)) {
             throw new OfferDateBeforeNow();
         }
         if (startDate.after(endDate)) {
             throw new EndDateBeforeStart();
         }
+    }
 
+    @SneakyThrows
+    public static void checkOfferMadaInWorkingHours(String beginTime, String endTime, String[] workingDays) {
+        Date now = new Date();
+        Calendar calendarNow = GregorianCalendar.getInstance();
+        calendarNow.setTime(now);
+        String weekday = String.valueOf(calendarNow.get(Calendar.DAY_OF_WEEK) - 1);
+        if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(weekday))) {
+            throw new OfferNotWorkingHour();
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        Date start = format.parse(beginTime);
+        Date end = format.parse(endTime);
+
+        Calendar calendarStart = GregorianCalendar.getInstance();
+        calendarStart.setTime(start);
+        Calendar calendarEnd = GregorianCalendar.getInstance();
+        calendarEnd.setTime(end);
+
+        int hour = calendarNow.get(Calendar.HOUR_OF_DAY);
+        int minute = calendarNow.get(Calendar.MINUTE);
+        int diff=(24-hour)*60-minute;
+
+        if (diff < (24-calendarEnd.get(Calendar.HOUR_OF_DAY))*60-calendarEnd.get(Calendar.MINUTE) ||
+                diff > (24-calendarStart.get(Calendar.HOUR_OF_DAY))*60-calendarStart.get(Calendar.MINUTE)) {
+            throw new OfferNotWorkingHour();
+        }
     }
 }

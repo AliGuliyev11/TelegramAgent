@@ -111,8 +111,7 @@ public class ExpiredDateGenerator {
             calendar.setTime(date);
             calendar.set(Calendar.HOUR_OF_DAY, i * 24);
             int weekDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-            if (Arrays.stream(weekdays).anyMatch(a -> a.equals(String.valueOf(weekDay)))) {
-            } else {
+            if (!Arrays.stream(weekdays).anyMatch(a -> a.equals(String.valueOf(weekDay)))) {
                 d++;
             }
         }

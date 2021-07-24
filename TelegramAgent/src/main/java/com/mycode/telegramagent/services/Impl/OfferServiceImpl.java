@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static com.mycode.telegramagent.utils.Validation.checkOfferMadaInWorkingHours;
 import static com.mycode.telegramagent.utils.Validation.validation;
 
 @Service
@@ -28,10 +29,19 @@ public class OfferServiceImpl implements IOfferService {
         this.offerDAO = offerDAO;
     }
 
+    @Value("${work.begin.time}")
+    String beginTime;
+    @Value("${work.end.time}")
+    String endTime;
+    @Value("${working.days}")
+    String[] workingDays;
+
     @SneakyThrows
     @Override
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
+
+        checkOfferMadaInWorkingHours(beginTime,endTime,workingDays);
         if (userRequest == null) {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||

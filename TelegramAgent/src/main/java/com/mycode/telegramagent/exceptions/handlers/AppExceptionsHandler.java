@@ -254,5 +254,15 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(value = {OfferNotWorkingHour.class})
+    public ResponseEntity<Object> handleOfferNotWHoursException(OfferNotWorkingHour ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Please,come back later.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
 
 }

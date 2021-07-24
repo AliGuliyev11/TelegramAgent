@@ -1,5 +1,6 @@
 package com.mycode.telegramagent.services.quartz.RequestExpChecker;
 
+import com.mycode.telegramagent.exceptions.OfferNotWorkingHour;
 import lombok.SneakyThrows;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,6 +24,8 @@ public class RequestCheckerConf {
     String beginTime;
     @Value("${work.end.time}")
     String endTime;
+    @Value("${working.days}")
+    String[] workingDays;
 
     @Bean
     public JobDetail issuesSync() {
@@ -46,15 +50,24 @@ public class RequestCheckerConf {
                 .withMinute(calendarStart.get(Calendar.MINUTE));
         LocalDateTime endDate = LocalDateTime.now().withHour(calendarEnd.get(Calendar.HOUR_OF_DAY))
                 .withMinute(calendarEnd.get(Calendar.MINUTE));
-        return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
-                .withIdentity("requestChecker", "requestCheckerTrigger")
-                .endAt(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()))
-                .startAt(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()))
-                .withSchedule(
-                        simpleSchedule()
-                                .withIntervalInMinutes(1)
-                                .repeatForever()
-                ).build();
+
+        Date now = new Date();
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(now);
+        String weekday = String.valueOf(calendar.get(Calendar.DAY_OF_WEEK) - 1);
+        if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(weekday))) {
+            return null;
+        } else {
+            return TriggerBuilder.newTrigger()
+                    .forJob(jobDetail)
+                    .withIdentity("requestChecker", "requestCheckerTrigger")
+                    .endAt(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()))
+                    .startAt(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()))
+                    .withSchedule(
+                            simpleSchedule()
+                                    .withIntervalInMinutes(1)
+                                    .repeatForever()
+                    ).build();
+        }
     }
 }

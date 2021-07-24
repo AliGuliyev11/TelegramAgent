@@ -30,8 +30,6 @@ public class RequestChecker extends QuartzJobBean {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String strDate = dateFormat.format(date);
         dao.requestChecker(strDate);
-
-//        Date date=simpleDateFormat.parse(a);
         System.out.println(strDate);
     }
 }
