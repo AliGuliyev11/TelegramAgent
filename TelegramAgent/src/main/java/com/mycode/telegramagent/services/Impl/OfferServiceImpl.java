@@ -9,6 +9,7 @@ import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;

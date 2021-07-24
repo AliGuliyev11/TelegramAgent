@@ -36,13 +36,15 @@ public class OrderDaoImpl implements OrderDAO {
     String endTime;
     @Value("${expired.time}")
     int expiredTime;
+    @Value("${working.days}")
+    String[] workingDays;
 
     @Override
     public void addOrder(Order order) {
         UserRequest userRequest = modelMapper.map(order, UserRequest.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         List<Agent> agentList = agentRepo.getVerifiedAgents();
-        LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime);
+        LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime,workingDays);
         for (var item : agentList) {
             userRequest.setExpiredDate(expiredDate);
             userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
