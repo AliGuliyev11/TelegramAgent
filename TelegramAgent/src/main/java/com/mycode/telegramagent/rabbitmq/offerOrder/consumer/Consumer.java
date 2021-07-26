@@ -5,10 +5,11 @@ import com.mycode.telegramagent.dto.Order;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-//@Service
+@Service
 public class Consumer {
 
     private final IOrderService orderService;

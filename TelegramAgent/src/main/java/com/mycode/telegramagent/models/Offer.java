@@ -19,6 +19,7 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Offer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +36,4 @@ public class Offer implements Serializable {
     Agent agent;
     Date acceptedDate;
     String phoneNumber;
-
 }

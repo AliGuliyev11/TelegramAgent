@@ -137,7 +137,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {EmailNotFound.class})
     public ResponseEntity<Object> handleEmailNotFoundException(EmailNotFound ex, WebRequest request) {
 
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
                 ex.getLocalizedMessage(), "Please,enter correct email.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
@@ -167,7 +167,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {RequestNotFound.class})
     public ResponseEntity<Object> handleRequestNotFoundException(RequestNotFound ex, WebRequest request) {
 
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
                 ex.getLocalizedMessage(), "This request not found.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
@@ -259,6 +259,26 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
                 ex.getLocalizedMessage(), "Please,come back later.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {RequestInArchive.class})
+    public ResponseEntity<Object> handleRequestInArchiveException(RequestInArchive ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "This request is in archive.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {OfferBudgetHigher.class})
+    public ResponseEntity<Object> handleOfferBudgetException(OfferBudgetHigher ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Offer budget too higher than requested budget.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
 

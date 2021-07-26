@@ -4,6 +4,7 @@ import com.mycode.telegramagent.dao.Interface.OfferDAO;
 import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
+import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.exceptions.*;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
@@ -41,7 +42,7 @@ public class OfferServiceImpl implements IOfferService {
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
 
-        checkOfferMadaInWorkingHours(beginTime,endTime,workingDays);
+        checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
         if (userRequest == null) {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||
@@ -49,9 +50,11 @@ public class OfferServiceImpl implements IOfferService {
             throw new YouAlreadyMakeOffer();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
             throw new RequestExpired();
+        } else if (userRequest.getRequestStatus().equals(RequestStatus.De_Active)) {
+            throw new RequestInArchive();
         }
         checkStartDate(offerDto.getStartDate(), userRequest.getOrderdate());
-        validation(offerDto);
+        validation(offerDto,userRequest.getOrderbudget());
 
 
         return offerDAO.saveOffer(userId, email, offerDto);
@@ -63,7 +66,7 @@ public class OfferServiceImpl implements IOfferService {
     }
 
     @SneakyThrows
-    private void checkStartDate(String startDate, Date orderDate) {
+    public void checkStartDate(String startDate, Date orderDate) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date start = simpleDateFormat.parse(startDate);
         String a = simpleDateFormat.format(orderDate);

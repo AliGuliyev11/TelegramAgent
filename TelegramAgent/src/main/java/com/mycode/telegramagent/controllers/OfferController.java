@@ -26,8 +26,7 @@ public class OfferController {
 
     @SneakyThrows
     @PostMapping("/{userId}")
-    public Offer sendOffer(@RequestAttribute("user") AgentDto agentDto, @PathVariable("userId") String userId,
-                          @Valid @RequestBody OfferDto offerDto) {
+    public Offer sendOffer(@RequestAttribute("user") AgentDto agentDto, @PathVariable("userId") String userId, @RequestBody OfferDto offerDto) {
 
         return offerService.saveOffer(userId, agentDto.getEmail(), offerDto);
     }

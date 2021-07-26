@@ -16,7 +16,7 @@ public class Validation {
     private static final String DATE_REGEX = "\\d{4}[-]\\d{2}[-]\\d{2}";
 
     @SneakyThrows
-    public static void validation(OfferDto offerDto) {
+    public static void validation(OfferDto offerDto, int orderBudget) {
 
 
         if (!Pattern.matches(DATE_REGEX, offerDto.getStartDate()) || !Pattern.matches(DATE_REGEX, offerDto.getEndDate())) {
@@ -29,6 +29,10 @@ public class Validation {
         if (offerDto.getPrice() <= 0) {
             throw new OfferPriceZero();
         }
+        if (offerDto.getPrice()>orderBudget){
+            throw new OfferBudgetHigher();
+        }
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = simpleDateFormat.parse(offerDto.getStartDate());
         Date endDate = simpleDateFormat.parse(offerDto.getEndDate());

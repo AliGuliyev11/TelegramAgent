@@ -76,6 +76,7 @@ public class OfferImpl implements OfferDAO {
     }
 
     @Override
+    @Transactional
     public void offerAccepted(ReplyToOffer replyToOffer) {
         Offer offer=offerRepo.findById(replyToOffer.getOfferId()).get();
         offer.setAcceptedDate(new Date());

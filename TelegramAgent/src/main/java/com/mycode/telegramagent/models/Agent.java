@@ -14,6 +14,7 @@ import java.util.List;
 @EntityListeners(AgentLifeCycle.class)
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Agent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

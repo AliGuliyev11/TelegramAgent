@@ -44,7 +44,7 @@ public class OrderDaoImpl implements OrderDAO {
         UserRequest userRequest = modelMapper.map(order, UserRequest.class);
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         List<Agent> agentList = agentRepo.getVerifiedAgents();
-        LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime,workingDays);
+        LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime, workingDays);
         for (var item : agentList) {
             userRequest.setExpiredDate(expiredDate);
             userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
@@ -53,6 +53,10 @@ public class OrderDaoImpl implements OrderDAO {
             orderRepo.save(userRequest);
 
         }
+    }
+
+    public void saveUserRequest(UserRequest userRequest) {
+        orderRepo.save(userRequest);
     }
 
     @Override
@@ -86,9 +90,7 @@ public class OrderDaoImpl implements OrderDAO {
 
     @Override
     public void requestStatusDeActive(String uuid) {
-        UserRequest userRequest = orderRepo.getUserRequestByUserId(uuid);
-        userRequest.setRequestStatus(RequestStatus.De_Active);
-        orderRepo.save(userRequest);
+        orderRepo.getUserRequestByUserId(uuid);
     }
 
     @Override

@@ -125,7 +125,7 @@ public class IAgentServiceImpl implements IAgentService {
         emailService.sendSimpleMessage(email, "Forgot password", text);
     }
 
-    private Boolean checkUnique(AgentDto agentDto) {
+    public Boolean checkUnique(AgentDto agentDto) {
         if (agentDAO.checkAgencyName(agentDto.getAgencyName())) {
             throw new AgencyExist();
         } else if (agentDAO.checkCompanyName(agentDto.getCompanyName())) {
@@ -219,7 +219,7 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Override
     public Boolean verifyUser(int agencyName) {
-        Agent agent=agentDAO.getAgentByHashCode(agencyName);
+        Agent agent = agentDAO.getAgentByHashCode(agencyName);
         String email = agent.getEmail();
         agent.setIsVerified(true);
         agentDAO.save(agent);

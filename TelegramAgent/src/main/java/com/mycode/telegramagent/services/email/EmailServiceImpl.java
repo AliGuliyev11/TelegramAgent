@@ -1,5 +1,6 @@
 package com.mycode.telegramagent.services.email;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,9 @@ public class EmailServiceImpl implements EmailService{
 
     private JavaMailSender emailSender;
 
+    @Value("${email.username}")
+    String emailUsername;
+
     public EmailServiceImpl(JavaMailSender emailSender) {
         this.emailSender = emailSender;
     }
@@ -28,7 +32,7 @@ public class EmailServiceImpl implements EmailService{
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             public void prepare(MimeMessage mimeMessage) throws Exception {
                 mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-                mimeMessage.setFrom(new InternetAddress("reminderazerbaijan@gmail.com"));
+                mimeMessage.setFrom(new InternetAddress(emailUsername));
                 mimeMessage.setSubject(subject);
 
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -46,7 +50,7 @@ public class EmailServiceImpl implements EmailService{
             public void prepare(MimeMessage mimeMessage) throws Exception {
 
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-                helper.setFrom("reminderazerbaijan@gmail.com");
+                helper.setFrom(emailUsername);
                 String[] myArray = new String[recipientList.size()];
                 recipientList.toArray(myArray);
                 helper.setTo(myArray);

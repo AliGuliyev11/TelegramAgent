@@ -41,7 +41,7 @@ public class UserRequest {
     RequestStatus requestStatus;
     @Enumerated(EnumType.STRING)
     AgentRequestStatus agentRequestStatus;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     Agent agent;
     @OneToOne
     @JsonBackReference
