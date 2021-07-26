@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.mycode.telegramagent.utils.PasswordCreator.passwordGenerator;
 
@@ -43,6 +45,11 @@ public class IAgentServiceImpl implements IAgentService {
     AgentDAO agentDAO;
     EmailServiceImpl emailService;
     ObjectMapper objectMapper;
+
+    private static final String EMAIL_REGEX = "([a-zA-Z0-9_.+-])+\\@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})";
+    private static final String PHONE_REGEX = "[+]{1}[9]{2}[4]{1}(([5]([0]|[1]|[5]))|([7]([0]|[7]))|([9]([9])))[1-9][0-9]{6}";
+    private static final String PASSWORD_REGEX = ".{8,}";
+    private static final String VOEN_REGEX = "[0-9]{10}";
 
     public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper) {
         this.environment = environment;
@@ -66,6 +73,7 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Override
     public AgentDto signup(AgentDto agentDto) {
+        regexValidation(agentDto);
         checkUnique(agentDto);
         Keycloak keycloak = connectKeycloak();
         UserRepresentation userRepresentation = userRepresentation(agentDto);
@@ -87,6 +95,25 @@ public class IAgentServiceImpl implements IAgentService {
         }
 
         return agentDto;
+    }
+
+    private void regexValidation(AgentDto agentDto) {
+        if (!isMatchedRegex(agentDto.getEmail(), EMAIL_REGEX)) {
+            throw new EmailValidation();
+        } else if (!isMatchedRegex(agentDto.getPhoneNumber(), PHONE_REGEX)) {
+            throw new PhoneValidation();
+        } else if (!isMatchedRegex(agentDto.getPassword(), PASSWORD_REGEX)) {
+            throw new PasswordValidation();
+        } else if (!isMatchedRegex(agentDto.getVoen(), VOEN_REGEX)) {
+            throw new VoenValidation();
+        }
+    }
+
+
+    public static boolean isMatchedRegex(String emailOrNumber, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(emailOrNumber);
+        return matcher.matches();
     }
 
     @Override
