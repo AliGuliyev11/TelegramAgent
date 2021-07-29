@@ -25,17 +25,10 @@ public class UserRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    Languages language;
-    String Ordertravel;
-    String Orderaddress1;
-    String Orderaddress2;
-    Date Orderdate;
-    int Ordertraveller;
-    int Orderbudget;
-    int Orderdateto;
-    Long chatId;
+    @Lob
+    @Column
+    String userRequest;
     String userId;
-    Date createdDate;
     LocalDateTime expiredDate;
     @Enumerated(EnumType.STRING)
     RequestStatus requestStatus;

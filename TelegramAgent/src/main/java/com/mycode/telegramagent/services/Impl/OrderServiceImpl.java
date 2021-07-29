@@ -1,7 +1,6 @@
 package com.mycode.telegramagent.services.Impl;
 
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
-import com.mycode.telegramagent.dto.Order;
 import com.mycode.telegramagent.exceptions.NotAnyRequest;
 import com.mycode.telegramagent.exceptions.RequestNotFound;
 import com.mycode.telegramagent.models.UserRequest;
@@ -9,6 +8,7 @@ import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -20,7 +20,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public void addOrder(Order order) {
+    public void addOrder(Map<String, String> order) {
         orderDAO.addOrder(order);
     }
 

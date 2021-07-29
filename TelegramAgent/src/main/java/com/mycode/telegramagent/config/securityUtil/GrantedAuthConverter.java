@@ -10,7 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * */
+
 public class GrantedAuthConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+
+    /** Converted keycloak roles */
+
     @Override
     public Collection<GrantedAuthority> convert(Jwt source) {
         Map<String, Object> realmAccess = source.getClaimAsMap("realm_access");

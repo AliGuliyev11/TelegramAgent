@@ -10,8 +10,10 @@ import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class OfferServiceImpl implements IOfferService {
 
     @SneakyThrows
     @Override
+    @Transactional
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
 
@@ -53,9 +56,9 @@ public class OfferServiceImpl implements IOfferService {
         } else if (userRequest.getRequestStatus().equals(RequestStatus.De_Active)) {
             throw new RequestInArchive();
         }
-        checkStartDate(offerDto.getStartDate(), userRequest.getOrderdate());
-        validation(offerDto,userRequest.getOrderbudget());
-
+        JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
+        validation(offerDto,jsonObject.getInt("Orderbudget"));
+        checkStartDate(offerDto.getStartDate(), jsonObject.getString("Orderdate"));
 
         return offerDAO.saveOffer(userId, email, offerDto);
     }
@@ -66,13 +69,18 @@ public class OfferServiceImpl implements IOfferService {
     }
 
     @SneakyThrows
-    public void checkStartDate(String startDate, Date orderDate) {
+    public void checkStartDate(String startDate, String orderDate) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("1");
         Date start = simpleDateFormat.parse(startDate);
-        String a = simpleDateFormat.format(orderDate);
-        Date requestedDate = simpleDateFormat.parse(a);
-        if (start.before(requestedDate) && !simpleDateFormat.format(orderDate).equals(startDate)) {
-            throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(orderDate));
+        System.out.println("2");
+        Date end = simpleDateFormat.parse(orderDate);
+        System.out.println("3");
+//        String a = simpleDateFormat.format(orderDate);
+//        Date requestedDate = simpleDateFormat.parse(a);
+        if (start.before(end) && !orderDate.equals(startDate)) {
+            System.out.println("4");
+            throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(end));
         }
     }
 

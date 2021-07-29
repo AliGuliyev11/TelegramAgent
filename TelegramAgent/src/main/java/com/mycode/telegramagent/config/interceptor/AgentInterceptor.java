@@ -10,14 +10,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * */
+
 @Component
 public class AgentInterceptor implements HandlerInterceptor {
+
+    /** Every requests enters this method */
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
         String auth = request.getHeader("Authorization");
         if(auth != null){
-            System.out.println("Girir wteg");
-
             AgentDto agent = new AgentDto();
             String[] chunks = auth.split("\\.");
             Base64.Decoder decoder = Base64.getDecoder();

@@ -1,22 +1,30 @@
 package com.mycode.telegramagent.dao.Impl;
 
+import com.google.gson.Gson;
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
-import com.mycode.telegramagent.dto.Order;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.repositories.AgentRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static com.mycode.telegramagent.utils.ExpiredDateGenerator.getExpiredDate;
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * */
 
 @Component
 public class OrderDaoImpl implements OrderDAO {
@@ -40,15 +48,21 @@ public class OrderDaoImpl implements OrderDAO {
     String[] workingDays;
 
     @Override
-    public void addOrder(Order order) {
-        UserRequest userRequest = modelMapper.map(order, UserRequest.class);
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void addOrder(Map<String, String> order) {
+        Gson gson = new Gson();
+        String json = gson.toJson(order);
+        JSONObject jsonObject=new JSONObject(json);
+        String uuid=jsonObject.getString("uuid");
         List<Agent> agentList = agentRepo.getVerifiedAgents();
         LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime, workingDays);
         for (var item : agentList) {
+            UserRequest userRequest = new UserRequest();
+            userRequest.setUserRequest(json);
             userRequest.setExpiredDate(expiredDate);
             userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
             userRequest.setRequestStatus(RequestStatus.Active);
+            userRequest.setUserId(uuid);
             userRequest.setAgent(item);
             orderRepo.save(userRequest);
 
@@ -94,6 +108,7 @@ public class OrderDaoImpl implements OrderDAO {
     }
 
     @Override
+    @Transactional
     public List<UserRequest> getAllRequests(String email) {
         return orderRepo.getAllActiveRequestByAgent(email);
     }

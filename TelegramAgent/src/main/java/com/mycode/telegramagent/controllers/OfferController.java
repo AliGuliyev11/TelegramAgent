@@ -12,6 +12,11 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * */
+
 @RestController
 @RequestMapping(path = "api/v1/offer")
 public class OfferController {

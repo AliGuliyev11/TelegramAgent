@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+
+
 @Getter
 @Setter
 public class ReplyToOffer implements Serializable {

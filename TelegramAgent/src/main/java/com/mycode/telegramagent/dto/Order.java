@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
+
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)

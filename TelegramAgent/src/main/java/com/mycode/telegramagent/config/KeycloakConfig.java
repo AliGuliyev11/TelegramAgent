@@ -34,6 +34,12 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @apiNote  Web security config
+ * */
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true, securedEnabled = true)

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 public class Consumer {
 
@@ -21,7 +23,7 @@ public class Consumer {
     }
 
     @RabbitListener(queues = "orderQueue")
-    public void onMessageSendOrder(Order order) {
+    public void onMessageSendOrder(Map<String,String> order) {
         System.out.println(order);
         orderService.addOrder(order);
     }
