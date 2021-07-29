@@ -34,7 +34,7 @@ public class ExpiredDateGenerator {
             if (diffMinutes >= requestMinutes && isInWorkHour >= requestMinutes) {
                 long day = 0;
                 day = getDayInWorkDays(day, workingDays);
-                return localDateTime.plusDays(day).plusMinutes(requestMinutes);
+                return localDateTime.withSecond(59).withNano(0).plusDays(day).plusMinutes(requestMinutes);
             } else if (diffMinutes >= requestMinutes && isInWorkHour < requestMinutes) {
                 return isNotWorkingHours(requestMinutes, diffMinutes, isInWorkHour, localDateTime,workingDays);
             } else if (diffMinutes < requestMinutes) {
@@ -54,7 +54,7 @@ public class ExpiredDateGenerator {
         day = getDayInWorkDaysAfterNow(day, workingDays);
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(start);
-        return LocalDateTime.now().withHour(calendar.get(Calendar.HOUR_OF_DAY))
+        return LocalDateTime.now().withSecond(59).withNano(0).withHour(calendar.get(Calendar.HOUR_OF_DAY))
                 .withMinute(calendar.get(Calendar.MINUTE)).plusDays(day).plusMinutes(theRestMinute);
     }
 
@@ -67,7 +67,7 @@ public class ExpiredDateGenerator {
         int withMinute = localDateTime.getMinute() + minute;
         long day = 1;
         day = getDayInWorkDays(day, workingDays);
-        return LocalDateTime.now().withHour(localDateTime.plusMinutes(minute).getHour())
+        return LocalDateTime.now().withSecond(59).withNano(0).withHour(localDateTime.plusMinutes(minute).getHour())
                 .withMinute(withMinute % 10).plusDays(day).minusMinutes(requestMinutes);
     }
 
@@ -80,7 +80,7 @@ public class ExpiredDateGenerator {
         day = getDayInWorkDays(day, workingDays);
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(start);
-        return LocalDateTime.now().withHour(calendar.get(Calendar.HOUR_OF_DAY))
+        return LocalDateTime.now().withSecond(59).withNano(0).withHour(calendar.get(Calendar.HOUR_OF_DAY))
                 .withMinute(calendar.get(Calendar.MINUTE)).plusDays(day).plusMinutes(theRestMinute);
     }
 

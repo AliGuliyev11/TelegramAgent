@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import static com.mycode.telegramagent.utils.ExpiredDateGenerator.getExpiredDate;
 import static com.mycode.telegramagent.utils.OfferToJasper.offerToJasper;
 import static com.mycode.telegramagent.utils.TextToImage.textToImage;
 
@@ -59,6 +60,14 @@ public class OfferImpl implements OfferDAO {
     @Value("${jasper.file}")
     String resourceFile;
 
+    @Value("${work.begin.time}")
+    String beginTime;
+    @Value("${work.end.time}")
+    String endTime;
+    @Value("${expired.time}")
+    int expiredTime;
+    @Value("${working.days}")
+    String[] workingDays;
 
     @SneakyThrows
     @Transactional(propagation = Propagation.REQUIRED)
@@ -67,10 +76,11 @@ public class OfferImpl implements OfferDAO {
         Agent agent = agentRepo.getAgentByEmail(email);
         UserRequest order = userRequest.getOrderByUserId(uuid, email);
         order.setAgentRequestStatus(AgentRequestStatus.Offer_Made);
+        order.setExpiredDate(getExpiredDate(beginTime, endTime, expiredTime, workingDays));
         JSONObject jsonObject = new JSONObject(order.getUserRequest());
         JasperDto jasperDto = offerToJasper(agent.getAgencyName(), offerDto);
 
-        textToImage(jasperDto,Languages.valueOf(jsonObject.getString("lang")), messageService, location, resourceFile);
+        textToImage(jasperDto, Languages.valueOf(jsonObject.getString("lang")), messageService, location, resourceFile);
         File photo = new File(location);
 
         Offer offer = modelMapper.map(offerDto, Offer.class);

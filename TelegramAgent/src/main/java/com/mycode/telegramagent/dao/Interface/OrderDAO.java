@@ -17,6 +17,7 @@ public interface OrderDAO {
     List<UserRequest> getAllArchive(String email);
 
     void requestChecker(String date);
+    List<UserRequest> getExpiredRequests(String date);
 
     void requestStatusDeActive(String uuid);
 

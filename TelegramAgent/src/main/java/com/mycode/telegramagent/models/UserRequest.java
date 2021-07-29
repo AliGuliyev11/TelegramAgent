@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.enums.RequestStatus;
+import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Setter
 @Entity(name = "user_request")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EntityListeners(OrderLifeCycle.class)
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

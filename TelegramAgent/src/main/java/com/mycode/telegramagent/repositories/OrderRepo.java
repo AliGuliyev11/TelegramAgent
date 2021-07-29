@@ -11,7 +11,7 @@ import java.util.List;
 public interface OrderRepo extends JpaRepository<UserRequest, Long> {
 
     @Modifying
-    @Query(value = "update user_request u SET request_status='De_Active',agent_request_status='Expired' WHERE u.user_id=:uuid",nativeQuery = true)
+    @Query(value = "update user_request u SET request_status='De_Active',agent_request_status='Expired' WHERE u.user_id=:uuid", nativeQuery = true)
     void getUserRequestByUserId(String uuid);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email " +
@@ -32,5 +32,10 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
     @Query(value = "update user_request u SET request_status='De_Active',agent_request_status='Expired' " +
             "where CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR), 'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:strDate as TIMESTAMP)", nativeQuery = true)
     void checkAndExpireRequest(String strDate);
+
+    @Query(value = "SELECT DISTINCT ON (user_id) *  from user_request u where " +
+            "CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR)," +
+            " 'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:date as TIMESTAMP)", nativeQuery = true)
+    List<UserRequest> getExpiredUserRequest(String date);
 
 }

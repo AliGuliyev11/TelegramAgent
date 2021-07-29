@@ -71,15 +71,9 @@ public class OfferServiceImpl implements IOfferService {
     @SneakyThrows
     public void checkStartDate(String startDate, String orderDate) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println("1");
         Date start = simpleDateFormat.parse(startDate);
-        System.out.println("2");
         Date end = simpleDateFormat.parse(orderDate);
-        System.out.println("3");
-//        String a = simpleDateFormat.format(orderDate);
-//        Date requestedDate = simpleDateFormat.parse(a);
         if (start.before(end) && !orderDate.equals(startDate)) {
-            System.out.println("4");
             throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(end));
         }
     }

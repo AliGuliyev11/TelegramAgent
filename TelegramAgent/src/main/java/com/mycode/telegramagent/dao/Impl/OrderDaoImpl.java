@@ -92,7 +92,14 @@ public class OrderDaoImpl implements OrderDAO {
         orderRepo.checkAndExpireRequest(date);
     }
 
+    @Transactional
     @Override
+    public List<UserRequest> getExpiredRequests(String date) {
+        return orderRepo.getExpiredUserRequest(date);
+    }
+
+    @Override
+    @Transactional
     public List<UserRequest> getAllArchive(String email) {
         return orderRepo.getAllArchivedRequests(email);
     }

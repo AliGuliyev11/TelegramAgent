@@ -1,6 +1,8 @@
 package com.mycode.telegramagent.services.quartz.RequestExpChecker;
 
 import com.mycode.telegramagent.exceptions.OfferNotWorkingHour;
+import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
+import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
 import lombok.SneakyThrows;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,7 @@ public class RequestCheckerConf {
     String endTime;
     @Value("${working.days}")
     String[] workingDays;
+
 
     @Bean
     public JobDetail issuesSync() {
@@ -58,15 +61,16 @@ public class RequestCheckerConf {
         if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(weekday))) {
             return null;
         } else {
+            int second=LocalDateTime.now().getSecond();
+            System.out.println(second);
+            int s=60-second;
+            System.out.println(s);
             return TriggerBuilder.newTrigger()
                     .forJob(jobDetail)
                     .withIdentity("requestChecker", "requestCheckerTrigger")
                     .endAt(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()))
                     .startAt(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()))
-                    .withSchedule(
-                            simpleSchedule()
-                                    .withIntervalInMinutes(1)
-                                    .repeatForever()
+                    .withSchedule(CronScheduleBuilder.cronSchedule("59 * * ? * * *")
                     ).build();
         }
     }

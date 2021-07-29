@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.File;
 import java.io.Serializable;
-
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -22,8 +22,8 @@ public class RabbitOffer implements Serializable {
 
     @Override
     public String toString() {
-        return "Offer{" +
-                "id=" + offerId +
+        return "RabbitOffer{" +
+                "offerId=" + offerId +
                 ", userId='" + userId + '\'' +
                 ", file=" + file +
                 '}';

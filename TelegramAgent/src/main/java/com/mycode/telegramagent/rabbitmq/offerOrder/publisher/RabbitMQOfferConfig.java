@@ -29,9 +29,28 @@ public class RabbitMQOfferConfig {
         return BindingBuilder.bind(queue).to(exchange).with("offerKey");
     }
 
+
+
+
     @Bean
     MessageConverter offerMessageConverter(){
         return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean(name = "offerMadeQueue")
+    Queue offerMadeQueue(){
+        Queue orderQueue = new Queue("offerMadeQueue", true);
+        return orderQueue;
+    }
+
+    @Bean(name = "offerMadeExchange")
+    DirectExchange offerMadeExchange(){
+        return new DirectExchange("offerMadeExchange");
+    }
+
+    @Bean(name = "offerMadeBind")
+    Binding offerMadeBind(@Qualifier("offerMadeQueue") Queue queue, @Qualifier("offerMadeExchange") DirectExchange exchange){
+        return BindingBuilder.bind(queue).to(exchange).with("offerMadeKey");
     }
 
 }
