@@ -24,4 +24,7 @@ public interface AgentRepo extends JpaRepository<Agent, Long> {
     Agent getAgentByEmail(String email);
     @Query(value = "SELECT * from agent a WHERE a.is_verified=true",nativeQuery = true)
     List<Agent> getVerifiedAgents();
+    @Query(value = "SELECT * from agent a WHERE a.is_verified=true AND a.email=:email",nativeQuery = true)
+    Agent getVerifiedAgent(String email);
+
 }

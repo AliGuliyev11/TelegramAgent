@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-@Service
+//@Service
 public class Consumer {
 
     private final IOrderService orderService;

@@ -27,10 +27,10 @@ public class AuthController {
         return ResponseEntity.ok(agentService.signup(agentDto));
     }
 
-    @PostMapping(path = "signin")
-    public ResponseEntity<?> signIn(@RequestBody AgentDto agentDto) {
-        return ResponseEntity.ok(agentService.signin(agentDto));
-    }
+//    @PostMapping(path = "signin")
+//    public ResponseEntity<?> signIn(@RequestBody AgentDto agentDto) {
+//        return ResponseEntity.ok(agentService.signin(agentDto));
+//    }
 
     @PostMapping(path = "forgot-pass")
     public void forgotPass(@RequestBody ForgotPass forgotPass) {

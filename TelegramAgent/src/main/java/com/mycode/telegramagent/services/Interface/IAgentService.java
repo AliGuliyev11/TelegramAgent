@@ -10,11 +10,8 @@ import org.keycloak.representations.idm.UserRepresentation;
 public interface IAgentService {
     AgentDto signup(AgentDto agentDto);
 
-    AccessTokenResponse signin(AgentDto agentDto);
+//    void signin(AgentDto agentDto);
 
-    UserRepresentation userRepresentation(AgentDto agentDto);
-
-    CredentialRepresentation passwordCred(AgentDto agentDto);
 //
 
     Boolean verifyUser(int agencyName);
@@ -25,7 +22,6 @@ public interface IAgentService {
 
     void forgotPassword(String email);
 
-    Keycloak connectKeycloak();
 
     void sendPassword(int agencyName);
 }

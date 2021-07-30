@@ -20,5 +20,4 @@ public interface AgentDAO {
     Boolean checkEmail(String email);
 
     Agent getAgentByEmail(String email);
-
 }
