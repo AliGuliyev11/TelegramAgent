@@ -26,7 +26,6 @@
     <field name="dateRange" class="java.lang.String"/>
     <field name="price" class="java.lang.Double"/>
     <field name="note" class="java.lang.String"/>
-    <field name="AGENCY" class="java.lang.String"/>
     <background>
         <band splitType="Stretch"/>
     </background>
@@ -37,17 +36,10 @@
                 <reportElement x="0" y="0" width="164" height="126" uuid="7836ad5d-91c8-428c-87ca-a1a8b2b8b137"/>
                 <imageExpression><![CDATA["src/main/resources/static/docs/tourApp.jpg"]]></imageExpression>
             </image>
-            <textField>
+            <staticText>
                 <reportElement style="Title" x="270" y="0" width="263" height="62"
                                uuid="bc1ce1da-8232-46ea-be55-cec4abb986dd"/>
-                <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                <textFieldExpression class="java.lang.String">
-                    <![CDATA[$F{AGENCY}]]></textFieldExpression>
-            </textField>
-
-            <staticText>
-                <reportElement x="270" y="94" width="263" height="42" uuid="8240065e-64b6-4170-b5d9-6341598e7b35"/>
-                <textElement textAlignment="Center">
+                <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="20"/>
                 </textElement>
                 <text><![CDATA[Tour App]]></text>

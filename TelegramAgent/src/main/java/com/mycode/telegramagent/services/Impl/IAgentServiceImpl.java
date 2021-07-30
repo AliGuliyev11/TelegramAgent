@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.mycode.telegramagent.utils.PasswordCreator.passwordGenerator;
+import static com.mycode.telegramagent.utils.Validation.signUpValidation;
 
 @Service
 public class IAgentServiceImpl implements IAgentService {
@@ -52,6 +53,7 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Override
     public AgentDto signup(AgentDto agentDto) {
+        signUpValidation(agentDto);
         regexValidation(agentDto);
         checkUnique(agentDto);
         Agent agent = agentDAO.signup(agentDto);
@@ -65,7 +67,7 @@ public class IAgentServiceImpl implements IAgentService {
             throw new PhoneValidation();
         } else if (!isMatchedRegex(agentDto.getPassword(), PASSWORD_REGEX)) {
             throw new PasswordValidation();
-        } else if (!isMatchedRegex(agentDto.getVoen(), VOEN_REGEX)) {
+        } else if (agentDto.getVoen()!=null && !isMatchedRegex(agentDto.getVoen(), VOEN_REGEX)) {
             throw new VoenValidation();
         }
     }

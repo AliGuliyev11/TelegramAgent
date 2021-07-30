@@ -1,6 +1,5 @@
 package com.mycode.telegramagent.services.Locale;
 
-import com.mycode.telegramagent.enums.Languages;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -16,29 +15,16 @@ public class LocaleMessageService {
     }
 
 
-    public String getMessage(String message, Languages languages) {
+    public String getMessage(String message) {
 
 
-        if (languages.equals(Languages.AZ)) {
-            locale = new Locale("az", "AZ");
-        } else if (languages.equals(Languages.RU)) {
-            locale = new Locale("ru", "RU");
-        } else {
-            locale = new Locale("en", "EN");
-        }
+        locale = new Locale("en", "EN");
 
         return messageSource.getMessage(message, null, locale);
     }
 
-    public String getMessage(String message, Languages languages, Object... args) {
-        if (languages.equals(Languages.AZ)) {
-            locale = new Locale("az", "AZ");
-        } else if (languages.equals(Languages.RU)) {
-            locale = new Locale("ru", "RU");
-        } else {
-            locale = new Locale("en", "EN");
-        }
-
+    public String getMessage(String message, Object... args) {
+        locale = new Locale("en", "EN");
         return messageSource.getMessage(message, args, locale);
     }
 

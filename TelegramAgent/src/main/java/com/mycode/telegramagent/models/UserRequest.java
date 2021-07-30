@@ -1,9 +1,7 @@
 package com.mycode.telegramagent.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
-import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
 import lombok.*;
@@ -13,8 +11,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 
 @Getter

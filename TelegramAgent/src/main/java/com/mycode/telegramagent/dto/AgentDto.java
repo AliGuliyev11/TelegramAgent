@@ -11,6 +11,7 @@ import lombok.*;
 public class AgentDto {
     private String email;
     private String password;
+    private String repass;
     private String voen;
     private String agencyName;
     private String companyName;

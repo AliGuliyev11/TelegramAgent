@@ -12,7 +12,6 @@ import lombok.Setter;
 public class JasperDto {
     String description;
     String dateRange;
-    String AGENCY;
     String note;
     Double price;
 }

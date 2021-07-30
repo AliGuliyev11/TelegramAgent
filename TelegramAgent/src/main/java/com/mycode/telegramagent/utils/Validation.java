@@ -1,5 +1,6 @@
 package com.mycode.telegramagent.utils;
 
+import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.exceptions.*;
 import lombok.SneakyThrows;
@@ -29,7 +30,7 @@ public class Validation {
         if (offerDto.getPrice() <= 0) {
             throw new OfferPriceZero();
         }
-        if (offerDto.getPrice()>orderBudget){
+        if (offerDto.getPrice() > orderBudget) {
             throw new OfferBudgetHigher();
         }
 
@@ -67,11 +68,23 @@ public class Validation {
 
         int hour = calendarNow.get(Calendar.HOUR_OF_DAY);
         int minute = calendarNow.get(Calendar.MINUTE);
-        int diff=(24-hour)*60-minute;
+        int diff = (24 - hour) * 60 - minute;
 
-        if (diff < (24-calendarEnd.get(Calendar.HOUR_OF_DAY))*60-calendarEnd.get(Calendar.MINUTE) ||
-                diff > (24-calendarStart.get(Calendar.HOUR_OF_DAY))*60-calendarStart.get(Calendar.MINUTE)) {
+        if (diff < (24 - calendarEnd.get(Calendar.HOUR_OF_DAY)) * 60 - calendarEnd.get(Calendar.MINUTE) ||
+                diff > (24 - calendarStart.get(Calendar.HOUR_OF_DAY)) * 60 - calendarStart.get(Calendar.MINUTE)) {
             throw new OfferNotWorkingHour();
+        }
+    }
+
+    @SneakyThrows
+    public static void signUpValidation(AgentDto agentDto) {
+        if (agentDto.getEmail() == null || agentDto.getPassword() == null || agentDto.getAgencyName() == null
+                || agentDto.getCompanyName() == null || agentDto.getPhoneNumber() == null || agentDto.getRepass() == null) {
+            throw new AgentValidation();
+        }
+
+        if (!agentDto.getPassword().equals(agentDto.getRepass())) {
+            throw new PasswordNotMatched();
         }
     }
 }

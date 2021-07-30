@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class OfferToJasper {
     @SneakyThrows
-    public static JasperDto offerToJasper(String agency, OfferDto offerDto) {
+    public static JasperDto offerToJasper(OfferDto offerDto) {
         SimpleDateFormat toDate = new SimpleDateFormat("yyyy-MM-dd");
         Date start = toDate.parse(offerDto.getStartDate());
         Date end = toDate.parse(offerDto.getEndDate());
@@ -17,7 +17,7 @@ public class OfferToJasper {
         String startDate = toString.format(start);
         String endDate = toString.format(end);
         String dateRange = startDate + "-" + endDate;
-        JasperDto jasperDto = JasperDto.builder().AGENCY(agency).description(offerDto.getDescription())
+        JasperDto jasperDto = JasperDto.builder().description(offerDto.getDescription())
                 .note(offerDto.getNote()).price(offerDto.getPrice()).dateRange(dateRange).build();
         return jasperDto;
     }

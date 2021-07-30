@@ -6,12 +6,12 @@ import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.RabbitOffer;
 import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
-import com.mycode.telegramagent.enums.Languages;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
 import com.mycode.telegramagent.repositories.AgentRepo;
+import com.mycode.telegramagent.repositories.JasperMessageRepo;
 import com.mycode.telegramagent.repositories.OfferRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
@@ -45,14 +45,16 @@ public class OfferImpl implements OfferDAO {
     private ModelMapper modelMapper = new ModelMapper();
     private final OrderRepo userRequest;
     private final LocaleMessageService messageService;
+    private final JasperMessageRepo jasperMessageRepo;
 
-    public OfferImpl(OfferRepo offerRepo, RabbitOfferService offerService, AgentRepo agentRepo, OrderRepo userRequest,
-                     LocaleMessageService messageService) {
+    public OfferImpl(OfferRepo offerRepo, RabbitOfferService offerService, AgentRepo agentRepo,
+                     OrderRepo userRequest, LocaleMessageService messageService, JasperMessageRepo jasperMessageRepo) {
         this.offerRepo = offerRepo;
         this.offerService = offerService;
         this.agentRepo = agentRepo;
         this.userRequest = userRequest;
         this.messageService = messageService;
+        this.jasperMessageRepo = jasperMessageRepo;
     }
 
     @Value("${jasper.path}")
@@ -78,9 +80,8 @@ public class OfferImpl implements OfferDAO {
         order.setAgentRequestStatus(AgentRequestStatus.Offer_Made);
         order.setExpiredDate(getExpiredDate(beginTime, endTime, expiredTime, workingDays));
         JSONObject jsonObject = new JSONObject(order.getUserRequest());
-        JasperDto jasperDto = offerToJasper(agent.getAgencyName(), offerDto);
-
-        textToImage(jasperDto, Languages.valueOf(jsonObject.getString("lang")), messageService, location, resourceFile);
+        JasperDto jasperDto = offerToJasper(offerDto);
+        textToImage(jasperDto, jsonObject.getString("lang"), messageService, location, resourceFile, jasperMessageRepo);
         File photo = new File(location);
 
         Offer offer = modelMapper.map(offerDto, Offer.class);
@@ -89,7 +90,7 @@ public class OfferImpl implements OfferDAO {
         offer.setUserRequest(order);
         Offer savedOffer = offerRepo.save(offer);
         RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
-//        offerService.send(rabbitOffer);
+        offerService.send(rabbitOffer);
         order.setOffer(savedOffer);
         userRequest.save(order);
         return savedOffer;
@@ -120,7 +121,7 @@ public class OfferImpl implements OfferDAO {
 
     @Override
     @Transactional
-    public Offer getOfferById(String email,Long id) {
+    public Offer getOfferById(String email, Long id) {
         return offerRepo.getOfferByEmailAndId(email, id);
     }
 }

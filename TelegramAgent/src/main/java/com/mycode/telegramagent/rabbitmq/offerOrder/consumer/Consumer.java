@@ -1,7 +1,6 @@
 package com.mycode.telegramagent.rabbitmq.offerOrder.consumer;
 
 import com.mycode.telegramagent.dto.ReplyToOffer;
-import com.mycode.telegramagent.dto.Order;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import com.mycode.telegramagent.services.Interface.IOrderService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-//@Service
+@Service
 public class Consumer {
 
     private final IOrderService orderService;
