@@ -13,12 +13,13 @@ public class GetMessages {
             return null;
         } else {
             JSONObject text = new JSONObject(message.getMessage());
-            String jasperText = text.getString(language.toUpperCase());
-            if (jasperText == null) {
+
+            try{
+                return text.getString(language.toUpperCase());
+            }catch (Exception e){
                 return messageService.getMessage(keyword);
-            } else {
-                return jasperText;
             }
+
         }
 
     }

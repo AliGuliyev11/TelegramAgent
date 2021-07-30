@@ -2,6 +2,7 @@ package com.mycode.telegramagent.utils;
 
 import lombok.SneakyThrows;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 import java.text.SimpleDateFormat;
@@ -28,7 +29,11 @@ public class ExpiredDateGenerator {
         Date now = format.parse(formatDateTime);
         long diffEndTimeNow = end.getTime() - now.getTime();
         long isInWorkHour = diffEndTimeNow / (60 * 1000);
-        if (now.after(end)) {
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(Date.from(Instant.now()));
+        if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK) - 1)))) {
+            return notWorkingDay(requestMinutes, diffMinutes, isInWorkHour, start, workingDays);
+        } else if (now.after(end)) {
             return nowAfterEnd(requestMinutes, diffMinutes, start, workingDays);
         } else {
             if (diffMinutes >= requestMinutes && isInWorkHour >= requestMinutes) {
@@ -36,14 +41,26 @@ public class ExpiredDateGenerator {
                 day = getDayInWorkDays(day, workingDays);
                 return localDateTime.withSecond(59).withNano(0).plusDays(day).plusMinutes(requestMinutes);
             } else if (diffMinutes >= requestMinutes && isInWorkHour < requestMinutes) {
-                return isNotWorkingHours(requestMinutes, diffMinutes, isInWorkHour, localDateTime,workingDays);
+                return isNotWorkingHours(requestMinutes, diffMinutes, isInWorkHour, localDateTime, workingDays);
             } else if (diffMinutes < requestMinutes) {
-                return reqMinBigThanDiffMin(requestMinutes, diffMinutes, isInWorkHour, start,workingDays);
+                return reqMinBigThanDiffMin(requestMinutes, diffMinutes, isInWorkHour, start, workingDays);
             }
         }
 
 
         return null;
+    }
+
+    private static LocalDateTime notWorkingDay(long requestMinutes, long diffMinutes, long isInWorkHour,
+                                               Date start, String[] workingDays) {
+        long day = requestMinutes / diffMinutes;
+        long theRestMinute = requestMinutes - diffMinutes * day;
+        day = 0;
+        day = getDayInWorkDays(day, workingDays);
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(start);
+        return LocalDateTime.now().withSecond(59).withNano(0).withHour(calendar.get(Calendar.HOUR_OF_DAY))
+                .withMinute(calendar.get(Calendar.MINUTE)).plusDays(day).plusMinutes(theRestMinute);
     }
 
 
