@@ -40,4 +40,8 @@ public class OfferController {
     public List<Offer> getAgentOffers(@RequestAttribute("user") AgentDto agentDto) {
         return offerService.getAgentOffers(agentDto.getEmail());
     }
+    @GetMapping("/show-offer-detail/{offerId}")
+    public Offer getAgentOfferDetail(@PathVariable("offerId") Long offerId,@RequestAttribute("user") AgentDto agentDto) {
+        return offerService.getOfferById(offerId,agentDto.getEmail());
+    }
 }

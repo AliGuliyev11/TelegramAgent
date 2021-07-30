@@ -89,7 +89,11 @@ public class OfferServiceImpl implements IOfferService {
     }
 
     @Override
-    public Offer getOfferById(Long id) {
-        return offerDAO.getOfferById(id);
+    public Offer getOfferById(Long id, String email) {
+        Offer offer=offerDAO.getOfferById(email, id);
+        if (offer==null){
+            throw new NotAnyOffer();
+        }
+        return offer;
     }
 }

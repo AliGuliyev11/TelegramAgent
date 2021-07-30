@@ -11,7 +11,9 @@ public interface OrderDAO {
     UserRequest getOrderById(Long id);
 
     List<UserRequest> getAllRequests(String email);
-
+    List<UserRequest> getAllNewRequests(String email);
+    List<UserRequest> getAllOfferMadeRequests(String email);
+    List<UserRequest> getAllAcceptedRequests(String email);
     UserRequest addToArchive(String email, Long id);
 
     List<UserRequest> getAllArchive(String email);

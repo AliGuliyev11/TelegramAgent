@@ -10,4 +10,7 @@ public interface OfferRepo extends JpaRepository<Offer, Long> {
     List<Offer> getOffersByAgent_Email(String email);
     @Query(value = "select o from offer o join Agent a ON o.agent.id=a.id where a.email=:email",nativeQuery = false)
     List<Offer> getOffersByAgentEmail(String email);
+    @Query(value = "select * from offer o join agent a ON o.agent_id=a.id where a.email=:email AND o.id=:id"
+            ,nativeQuery = true)
+    Offer getOfferByEmailAndId(String email,Long id);
 }

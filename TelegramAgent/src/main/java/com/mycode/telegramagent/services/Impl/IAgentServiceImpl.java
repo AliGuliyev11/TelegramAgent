@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Email;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.HashMap;
@@ -138,6 +139,9 @@ public class IAgentServiceImpl implements IAgentService {
         ur.update(userRep);
     }
 
+    @Value("${email.confirmation.url}")
+    String emailConfirmationUrl;
+
     @Override
     public void forgotPassword(String email) {
 
@@ -146,7 +150,7 @@ public class IAgentServiceImpl implements IAgentService {
         if (agent == null) {
             throw new EmailNotFound();
         }
-        String url = " http://localhost:8082/api/v1/auth/confirmed/" + agent.getHashCode();
+        String url = emailConfirmationUrl + agent.getHashCode();
         String text = "Please,click this link to confirm your email.Then we will send you password.This is confirmation " +
                 "link click <a href=" + url + ">here</a>";
         emailService.sendSimpleMessage(email, "Forgot password", text);

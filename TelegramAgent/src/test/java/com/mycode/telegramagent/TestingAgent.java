@@ -266,7 +266,7 @@ class TestingAgent {
         replyToOffer.setPhoneNumber("+994501234567");
         dao.offerAccepted(replyToOffer);
 
-        Offer acceptedOffer = dao.getOfferById(1l);
+        Offer acceptedOffer = dao.getOfferById("remindersazerbaijan1@gmail.com",1l);
         Assertions.assertEquals(AgentRequestStatus.Accepted, acceptedOffer.getUserRequest().getAgentRequestStatus());
     }
 

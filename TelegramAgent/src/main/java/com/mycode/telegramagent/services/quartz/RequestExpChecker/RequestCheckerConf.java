@@ -61,10 +61,6 @@ public class RequestCheckerConf {
         if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(weekday))) {
             return null;
         } else {
-            int second=LocalDateTime.now().getSecond();
-            System.out.println(second);
-            int s=60-second;
-            System.out.println(s);
             return TriggerBuilder.newTrigger()
                     .forJob(jobDetail)
                     .withIdentity("requestChecker", "requestCheckerTrigger")

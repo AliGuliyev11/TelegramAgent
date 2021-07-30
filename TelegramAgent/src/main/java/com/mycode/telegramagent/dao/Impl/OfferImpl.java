@@ -119,7 +119,8 @@ public class OfferImpl implements OfferDAO {
 
 
     @Override
-    public Offer getOfferById(Long id) {
-        return offerRepo.findById(id).get();
+    @Transactional
+    public Offer getOfferById(String email,Long id) {
+        return offerRepo.getOfferByEmailAndId(email, id);
     }
 }

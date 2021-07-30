@@ -119,4 +119,22 @@ public class OrderDaoImpl implements OrderDAO {
     public List<UserRequest> getAllRequests(String email) {
         return orderRepo.getAllActiveRequestByAgent(email);
     }
+
+    @Override
+    @Transactional
+    public List<UserRequest> getAllNewRequests(String email) {
+        return orderRepo.getAllNewRequestByAgent(email);
+    }
+
+    @Override
+    @Transactional
+    public List<UserRequest> getAllOfferMadeRequests(String email) {
+        return orderRepo.getAllOfferMadeRequestByAgent(email);
+    }
+
+    @Override
+    @Transactional
+    public List<UserRequest> getAllAcceptedRequests(String email) {
+        return orderRepo.getAllAcceptedRequestByAgent(email);
+    }
 }

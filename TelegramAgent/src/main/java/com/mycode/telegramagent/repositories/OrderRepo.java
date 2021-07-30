@@ -23,6 +23,17 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
     List<UserRequest> getAllActiveRequestByAgent(String email);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='New_Request'",nativeQuery = true)
+    List<UserRequest> getAllNewRequestByAgent(String email);
+
+    @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Offer_Made'",nativeQuery = true)
+    List<UserRequest> getAllOfferMadeRequestByAgent(String email);
+    @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Accepted'",nativeQuery = true)
+    List<UserRequest> getAllAcceptedRequestByAgent(String email);
+
+    @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
             "u.request_status='De_Active'", nativeQuery = true)
     List<UserRequest> getAllArchivedRequests(String email);
 
