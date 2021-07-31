@@ -7,6 +7,12 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for Jasper messages
+ */
+
 @Entity(name = "jasper_message")
 @Getter
 @Setter

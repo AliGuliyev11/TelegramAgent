@@ -8,6 +8,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for Agent entity
+ */
+
 @Entity
 @Getter
 @Setter
@@ -23,7 +29,6 @@ public class Agent {
     private String email;
     private Boolean isVerified;
     LocalDateTime createdDate;
-    @Column(nullable = true)
     private String voen;
     private String agencyName;
     private String password;

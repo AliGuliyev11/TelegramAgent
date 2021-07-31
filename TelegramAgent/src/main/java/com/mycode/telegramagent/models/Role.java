@@ -7,6 +7,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for security role of agent
+ */
+
 @Entity
 @Data
 @NoArgsConstructor

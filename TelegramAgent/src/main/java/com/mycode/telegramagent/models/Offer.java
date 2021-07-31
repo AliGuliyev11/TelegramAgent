@@ -14,6 +14,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for Agent offer
+ */
+
 @Getter
 @Setter
 @Entity(name = "offer")

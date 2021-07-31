@@ -12,6 +12,11 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for user request
+ */
 
 @Getter
 @Setter

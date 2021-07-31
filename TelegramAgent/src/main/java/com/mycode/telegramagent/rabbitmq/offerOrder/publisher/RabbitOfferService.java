@@ -6,6 +6,15 @@ import com.mycode.telegramagent.models.Offer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitMQOfferConfig.*;
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This service class send messages to bot
+ */
+
+
 @Service
 public class RabbitOfferService {
     private final RabbitTemplate template;
@@ -14,10 +23,11 @@ public class RabbitOfferService {
         this.template = template;
     }
 
-    public void send(RabbitOffer offer){
-        template.convertAndSend("offerExchange","offerKey",offer);
+    public void send(RabbitOffer offer) {
+        template.convertAndSend(OFFER_EXCHANGE, OFFER_KEY, offer);
     }
-    public void warn(WarningDto warning){
-        template.convertAndSend("offerMadeExchange","offerMadeKey",warning);
+
+    public void warn(WarningDto warning) {
+        template.convertAndSend(OFFER_MADE_EXCHANGE, OFFER_MADE_KEY, warning);
     }
 }

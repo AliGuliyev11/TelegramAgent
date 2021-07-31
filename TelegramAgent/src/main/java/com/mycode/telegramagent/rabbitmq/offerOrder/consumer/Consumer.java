@@ -10,6 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This service class for queue management
+ * When publisher send message consumer get message from this class
+ */
+
 @Service
 public class Consumer {
 
