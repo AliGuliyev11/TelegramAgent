@@ -45,6 +45,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.mycode.telegramagent.utils.Validation.checkStartDate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -286,7 +287,7 @@ class TestingAgent {
         JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
         String orderDate = jsonObject.getString("Orderdate");
         String startDate = "2021-07-24";
-        Assertions.assertThrows(CheckStartDate.class, () -> offerService.checkStartDate(startDate, orderDate, jsonObject.getLong("Orderdateto")));
+        Assertions.assertThrows(CheckStartDate.class, () -> checkStartDate(startDate, orderDate, jsonObject.getLong("Orderdateto")));
     }
 
     @Test

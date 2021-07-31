@@ -330,5 +330,15 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(value = {AgentNotFound.class})
+    public ResponseEntity<Object> handleAgentNotFoundnException(AgentNotFound ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
+                ex.getLocalizedMessage(), "Thia agent not found.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
 
 }

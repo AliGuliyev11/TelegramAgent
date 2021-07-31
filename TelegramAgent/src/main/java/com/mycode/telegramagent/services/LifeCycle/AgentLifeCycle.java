@@ -15,6 +15,12 @@ import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
 
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for Agent entity's EntityListener
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +36,8 @@ public class AgentLifeCycle {
 
     @Value("${email.verify.agent.url}")
     String emailUrl;
+
+    /** After agent creation agent enters this method */
 
     @PostPersist
     private void afterPost(Agent agent) {

@@ -11,7 +11,6 @@ import com.mycode.telegramagent.models.Role;
 import com.mycode.telegramagent.repositories.RoleRepo;
 import com.mycode.telegramagent.services.Interface.IAgentService;
 import com.mycode.telegramagent.services.email.EmailServiceImpl;
-import javassist.NotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -20,11 +19,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.mycode.telegramagent.utils.PasswordCreator.passwordGenerator;
+import static com.mycode.telegramagent.utils.Validation.regexValidation;
 import static com.mycode.telegramagent.utils.Validation.signUpValidation;
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 @Service
 public class IAgentServiceImpl implements IAgentService {
@@ -36,11 +39,6 @@ public class IAgentServiceImpl implements IAgentService {
     private final RoleRepo roleRepo;
 
 
-    private static final String EMAIL_REGEX = "([a-zA-Z0-9_.+-])+\\@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})";
-    private static final String PHONE_REGEX = "[+]{1}[9]{2}[4]{1}(([5]([0]|[1]|[5]))|([7]([0]|[7]))|([9]([9])))[1-9][0-9]{6}";
-    private static final String PASSWORD_REGEX = ".{8,}";
-    private static final String VOEN_REGEX = "[0-9]{10}";
-
     public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper,
                              PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
         this.environment = environment;
@@ -51,6 +49,13 @@ public class IAgentServiceImpl implements IAgentService {
         this.roleRepo = roleRepo;
     }
 
+    /**
+     * Service layer sign up
+     *
+     * @param agentDto Request body
+     * @return Agent
+     */
+
     @Override
     public AgentDto signup(AgentDto agentDto) {
         signUpValidation(agentDto);
@@ -60,31 +65,21 @@ public class IAgentServiceImpl implements IAgentService {
         return agentDto;
     }
 
-    private void regexValidation(AgentDto agentDto) {
-        if (!isMatchedRegex(agentDto.getEmail(), EMAIL_REGEX)) {
-            throw new EmailValidation();
-        } else if (!isMatchedRegex(agentDto.getPhoneNumber(), PHONE_REGEX)) {
-            throw new PhoneValidation();
-        } else if (!isMatchedRegex(agentDto.getPassword(), PASSWORD_REGEX)) {
-            throw new PasswordValidation();
-        } else if (agentDto.getVoen()!=null && !isMatchedRegex(agentDto.getVoen(), VOEN_REGEX)) {
-            throw new VoenValidation();
-        }
-    }
-
-
-    public static boolean isMatchedRegex(String emailOrNumber, String regex) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(emailOrNumber);
-        return matcher.matches();
-    }
+    /**
+     * This method for change logged in agent password
+     *
+     * @param email             logged in agent email
+     * @param passwordChangeDto DTO for password change
+     * @throws AgentNotFound
+     * @throws PasswordNotMatched
+     */
 
     @SneakyThrows
     @Override
     public void changePassword(String email, PasswordChangeDto passwordChangeDto) {
         Agent agent = agentDAO.getAgentByEmail(email);
         if (agent == null) {
-            throw new NotFoundException("Agent not found");
+            throw new AgentNotFound();
         }
 
         if (!passwordEncoder.matches(passwordChangeDto.getOldPass(), agent.getPassword())) {
@@ -93,24 +88,39 @@ public class IAgentServiceImpl implements IAgentService {
         updateUserPassword(email, passwordChangeDto.getNewPass());
     }
 
+    /**
+     * This method for update password()forgot password condition)
+     *
+     * @param email   email of agent if exist
+     * @param newPass new password of agent
+     * @throws AgentNotFound
+     */
+
     @SneakyThrows
     private void updateUserPassword(String email, String newPass) {
         Agent agent = agentDAO.getAgentByEmail(email);
         if (agent == null) {
-            throw new NotFoundException("Agent not found");
+            throw new AgentNotFound();
         }
         agent.setPassword(passwordEncoder.encode(newPass));
         agentDAO.save(agent);
     }
 
+
     @Value("${email.confirmation.url}")
     String emailConfirmationUrl;
+
+    /**
+     * This method for forgot password email sending
+     *
+     * @param email email of agent if exist
+     * @throws EmailNotFound
+     */
 
     @Override
     public void forgotPassword(String email) {
 
         Agent agent = agentDAO.getAgentByEmail(email);
-        System.out.println(agent);
         if (agent == null) {
             throw new EmailNotFound();
         }
@@ -119,6 +129,16 @@ public class IAgentServiceImpl implements IAgentService {
                 "link click <a href=" + url + ">here</a>";
         emailService.sendSimpleMessage(email, "Forgot password", text);
     }
+
+    /**
+     * This method for check agent DTO some elements is unique or not
+     *
+     * @param agentDto sign upped agent
+     * @return Boolean
+     * @throws AgencyExist
+     * @throws CompanyExist
+     * @throws EmailAlreadyExist
+     */
 
     public Boolean checkUnique(AgentDto agentDto) {
         if (agentDAO.checkAgencyName(agentDto.getAgencyName())) {
@@ -130,6 +150,13 @@ public class IAgentServiceImpl implements IAgentService {
         }
         return true;
     }
+
+    /**
+     * This method for sneding new password to agent
+     *
+     * @param agencyName agency hash code
+     */
+
 
     @Override
     public void sendPassword(int agencyName) {
@@ -143,6 +170,13 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Value("${agent.email.confirmation.limit}")
     long limitConfirmationEmail;
+
+    /**
+     * This method for verify agent
+     *
+     * @param agencyName agent hash code
+     * @return String
+     */
 
     @Override
     public String verifyUser(int agencyName) {

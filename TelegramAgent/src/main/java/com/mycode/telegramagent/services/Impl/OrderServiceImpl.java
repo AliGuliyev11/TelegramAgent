@@ -12,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 @Service
 public class OrderServiceImpl implements IOrderService {
 
@@ -21,15 +26,38 @@ public class OrderServiceImpl implements IOrderService {
         this.orderDAO = orderDAO;
     }
 
+    /**
+     * This method for adding request to every verified user
+     *
+     * @param order Map which getting from queue(answer of Bot's question )
+     */
+
     @Override
     public void addOrder(Map<String, String> order) {
         orderDAO.addOrder(order);
     }
 
+    /**
+     * This method for get getting user request by id
+     *
+     * @param id user request id
+     * @return UserRequest
+     */
+
     @Override
     public UserRequest getOrderById(Long id) {
         return orderDAO.getOrderById(id);
     }
+
+    /**
+     * This method for add user request to archive
+     *
+     * @param email current logged in agent's email
+     * @param id    user request's id
+     *              Need transactional for getting user request because user request has @Lob column
+     * @return UserRequest
+     * @throws RequestNotFound if not found any request
+     */
 
     @Override
     @Transactional
@@ -41,6 +69,20 @@ public class OrderServiceImpl implements IOrderService {
 
         return orderDAO.addToArchive(email, id);
     }
+
+
+    /**
+     * This method fro add user request to incoming requests from archived
+     *
+     * @param email current logged in agent's email
+     * @param id    user request's id
+     *              Need transactional for getting user request because user request has @Lob column
+     * @return UserRequest
+     * @throws RequestNotFound if not found any request
+     * @throws RequestExpired  if agent request status is expired
+     * @throws RequestAccepted if agent request status is accpeted
+     */
+
 
     @Override
     @Transactional
@@ -59,6 +101,14 @@ public class OrderServiceImpl implements IOrderService {
     }
 
 
+    /**
+     * This method for get all archived user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @throws NotAnyRequest if not found any request
+     */
+
     @Override
     public List<UserRequest> getAllArchive(String email) {
         List<UserRequest> userRequests = orderDAO.getAllArchive(email);
@@ -68,10 +118,24 @@ public class OrderServiceImpl implements IOrderService {
         return userRequests;
     }
 
+    /**
+     * This method for making request status De_Active
+     *
+     * @param uuid user id
+     */
+
     @Override
     public void requestStatusDeActive(String uuid) {
         orderDAO.requestStatusDeActive(uuid);
     }
+
+    /**
+     * This method for get all user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @throws NotAnyRequest if not found any request
+     */
 
     @Override
     public List<UserRequest> getAllRequests(String email) {
@@ -82,6 +146,14 @@ public class OrderServiceImpl implements IOrderService {
         return userRequests;
     }
 
+    /**
+     * This method for get all new type user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @throws NotAnyRequest if not found any request
+     */
+
     @Override
     public List<UserRequest> getAllNewRequests(String email) {
         List<UserRequest> userRequests = orderDAO.getAllNewRequests(email);
@@ -91,6 +163,14 @@ public class OrderServiceImpl implements IOrderService {
         return userRequests;
     }
 
+    /**
+     * This method for get all offer made user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @throws NotAnyRequest if not found any request
+     */
+
     @Override
     public List<UserRequest> getAllOfferMadeRequests(String email) {
         List<UserRequest> userRequests = orderDAO.getAllOfferMadeRequests(email);
@@ -99,6 +179,14 @@ public class OrderServiceImpl implements IOrderService {
         }
         return userRequests;
     }
+
+    /**
+     * This method for get all accepted type user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @throws NotAnyRequest if not found any request
+     */
 
     @Override
     public List<UserRequest> getAllAcceptedRequests(String email) {

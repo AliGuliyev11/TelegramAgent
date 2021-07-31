@@ -6,6 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Repository of offer repo
+ */
+
 public interface OfferRepo extends JpaRepository<Offer, Long> {
     List<Offer> getOffersByAgent_Email(String email);
     @Query(value = "select o from offer o join Agent a ON o.agent.id=a.id where a.email=:email",nativeQuery = false)

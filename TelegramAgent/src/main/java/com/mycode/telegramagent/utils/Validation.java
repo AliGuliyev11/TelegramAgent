@@ -6,10 +6,14 @@ import com.mycode.telegramagent.exceptions.*;
 import lombok.SneakyThrows;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Validation {
@@ -87,4 +91,61 @@ public class Validation {
             throw new PasswordNotMatched();
         }
     }
+
+
+    private static final String EMAIL_REGEX = "([a-zA-Z0-9_.+-])+\\@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})";
+    private static final String PHONE_REGEX = "[+]{1}[9]{2}[4]{1}(([5]([0]|[1]|[5]))|([7]([0]|[7]))|([9]([9])))[1-9][0-9]{6}";
+    private static final String PASSWORD_REGEX = ".{8,}";
+    private static final String VOEN_REGEX = "[0-9]{10}";
+
+
+    public static void regexValidation(AgentDto agentDto) {
+        if (!isMatchedRegex(agentDto.getEmail(), EMAIL_REGEX)) {
+            throw new EmailValidation();
+        } else if (!isMatchedRegex(agentDto.getPhoneNumber(), PHONE_REGEX)) {
+            throw new PhoneValidation();
+        } else if (!isMatchedRegex(agentDto.getPassword(), PASSWORD_REGEX)) {
+            throw new PasswordValidation();
+        } else if (agentDto.getVoen()!=null && !isMatchedRegex(agentDto.getVoen(), VOEN_REGEX)) {
+            throw new VoenValidation();
+        }
+    }
+
+
+    public static boolean isMatchedRegex(String emailOrNumber, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(emailOrNumber);
+        return matcher.matches();
+    }
+
+    @SneakyThrows
+    public static void checkEndDate(String endDate, String orderDate, long orderDateTo) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date end = simpleDateFormat.parse(endDate);
+        Date orderEnd = simpleDateFormat.parse(orderDate);
+        long days = ChronoUnit.DAYS.between(LocalDateTime.ofInstant(orderEnd.toInstant(), ZoneId.systemDefault())
+                , LocalDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
+        System.out.println(days);
+        if (days > orderDateTo) {
+            throw new CheckStartDate("Your end date must be equal start date or after " + orderDateTo + " days from this "
+                    + simpleDateFormat.format(orderEnd));
+        }
+    }
+
+    @SneakyThrows
+    public static void checkStartDate(String startDate, String orderDate, Long orderDateTo) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date start = simpleDateFormat.parse(startDate);
+        Date end = simpleDateFormat.parse(orderDate);
+        if (start.before(end) && !orderDate.equals(startDate)) {
+            throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(end));
+        }
+        long days = ChronoUnit.DAYS.between(LocalDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault())
+                , LocalDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
+        System.out.println(days);
+        if (days > orderDateTo) {
+            throw new CheckStartDate("Your start date must be equal " + simpleDateFormat.format(end) + " or after max " + orderDateTo + " days");
+        }
+    }
+
 }

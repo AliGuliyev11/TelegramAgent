@@ -10,7 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
-@Service
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Configuration class for configure email
+ */
+
+
 @Configuration
 public class MailSenderImp {
 
@@ -20,12 +26,18 @@ public class MailSenderImp {
     @Value("${email.password}")
     String emailPassword;
 
+    @Value("${email.host}")
+    String emailHost;
+
+    @Value("${email.port}")
+    int emailPort;
+
 
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+        mailSender.setHost(emailHost);
+        mailSender.setPort(emailPort);
 
         mailSender.setUsername(emailUsername);
         mailSender.setPassword(emailPassword);

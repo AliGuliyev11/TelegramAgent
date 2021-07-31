@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class is security class and it is use for authenticate agent and if successfully authenticated send token
+ */
+
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 

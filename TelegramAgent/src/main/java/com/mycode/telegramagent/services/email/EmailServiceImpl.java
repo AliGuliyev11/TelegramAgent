@@ -13,6 +13,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Service class for sending message
+ */
+
 @Service
 public class EmailServiceImpl implements EmailService{
 

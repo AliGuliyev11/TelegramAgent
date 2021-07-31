@@ -10,22 +10,19 @@ import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import static com.mycode.telegramagent.utils.Validation.checkOfferMadaInWorkingHours;
-import static com.mycode.telegramagent.utils.Validation.validation;
+import static com.mycode.telegramagent.utils.Validation.*;
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 @Service
 public class OfferServiceImpl implements IOfferService {
@@ -43,6 +40,21 @@ public class OfferServiceImpl implements IOfferService {
     String endTime;
     @Value("${working.days}")
     String[] workingDays;
+
+    /**
+     * This request for save and send offer
+     *
+     * @param userId   bot user id
+     * @param email    agent email
+     * @param offerDto current offer by agent
+     * @return Offer
+     * @throws YouAlreadyMakeOffer when agent request status is offer made
+     * @throws RequestExpired      when agent request status is expired
+     * @throws RequestInArchive    when request status is de_active
+     * @apiNote First, program get agent and user request
+     * then set expired date which properties goes from application.properties.Convert text to Jasper image and send user
+     * Need transactional for getting user request because user request has @Lob column
+     */
 
     @SneakyThrows
     @Override
@@ -69,40 +81,26 @@ public class OfferServiceImpl implements IOfferService {
         return offerDAO.saveOffer(userId, email, offerDto);
     }
 
-    @SneakyThrows
-    private void checkEndDate(String endDate, String orderDate, long orderDateTo) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date end = simpleDateFormat.parse(endDate);
-        Date orderEnd = simpleDateFormat.parse(orderDate);
-        long days = ChronoUnit.DAYS.between(LocalDateTime.ofInstant(orderEnd.toInstant(), ZoneId.systemDefault())
-                , LocalDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault()));
-        System.out.println(days);
-        if (days > orderDateTo) {
-            throw new CheckStartDate("Your end date must be equal start date or after " + orderDateTo + " days from this "
-                    + simpleDateFormat.format(orderEnd));
-        }
-    }
+    /**
+     * This method for when user accept offer change request status and add user data to offer
+     * Need transactional for getting user request because user request has @Lob column
+     *
+     * @param replyToOffer DTO which comes from user
+     */
 
     @Override
     public void offerAccepted(ReplyToOffer replyToOffer) {
         offerDAO.offerAccepted(replyToOffer);
     }
 
-    @SneakyThrows
-    public void checkStartDate(String startDate, String orderDate, Long orderDateTo) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date start = simpleDateFormat.parse(startDate);
-        Date end = simpleDateFormat.parse(orderDate);
-        if (start.before(end) && !orderDate.equals(startDate)) {
-            throw new CheckStartDate("Your start date must be equal or after " + simpleDateFormat.format(end));
-        }
-        long days = ChronoUnit.DAYS.between(LocalDateTime.ofInstant(end.toInstant(), ZoneId.systemDefault())
-                , LocalDateTime.ofInstant(start.toInstant(), ZoneId.systemDefault()));
-        System.out.println(days);
-        if (days > orderDateTo) {
-            throw new CheckStartDate("Your start date must be equal " + simpleDateFormat.format(end) + " or after max " + orderDateTo + " days");
-        }
-    }
+
+    /**
+     * This method for get logged in user offers
+     *
+     * @param email current agent email
+     * @return List<Offer>
+     * @throws NotAnyOffer if not found any offer
+     */
 
     @Override
     public List<Offer> getAgentOffers(String email) {
@@ -113,6 +111,15 @@ public class OfferServiceImpl implements IOfferService {
 
         return offers;
     }
+
+    /**
+     * This method for get logged in user offer
+     *
+     * @param email current agent email
+     * @param id    offer id
+     * @return Offer
+     * @throws NotAnyOffer if not found any offer
+     */
 
     @Override
     public Offer getOfferById(Long id, String email) {

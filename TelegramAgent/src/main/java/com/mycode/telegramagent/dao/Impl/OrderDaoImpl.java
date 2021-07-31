@@ -85,7 +85,7 @@ public class OrderDaoImpl implements OrderDAO {
     }
 
     /**
-     * This method fro ass user request to archive
+     * This method for add user request to archive
      *
      * @param email current logged in agent's email
      * @param id    user request's id
@@ -165,6 +165,9 @@ public class OrderDaoImpl implements OrderDAO {
     public UserRequest getOrderById(Long id) {
         return orderRepo.findById(id).orElseThrow(RequestNotFound::new);
     }
+
+    /** This method for making request status De_Active
+     * @param uuid user id */
 
     @Override
     public void requestStatusDeActive(String uuid) {

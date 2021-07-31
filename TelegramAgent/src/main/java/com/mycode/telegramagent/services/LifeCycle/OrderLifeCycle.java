@@ -11,6 +11,12 @@ import javax.persistence.PostLoad;
 import javax.persistence.PostUpdate;
 import java.time.LocalDateTime;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This class for Order entity's EntityListener
+ */
+
 @Data
 @NoArgsConstructor
 public class OrderLifeCycle {
@@ -21,8 +27,12 @@ public class OrderLifeCycle {
         this.rabbitOfferService = rabbitOfferService;
     }
 
+    /**
+     * When user request call from db and not empty user request enters this method
+     */
+
     @PostLoad
-    private void beforeUpdate(UserRequest userRequest) {
+    private void beforeLoad(UserRequest userRequest) {
         if ((userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) || userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Accepted))
                 && userRequest.getExpiredDate().isBefore(LocalDateTime.now())) {
             System.out.println("BB");

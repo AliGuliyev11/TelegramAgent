@@ -8,6 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Repository of order repo
+ */
+
 public interface OrderRepo extends JpaRepository<UserRequest, Long> {
 
     @Modifying

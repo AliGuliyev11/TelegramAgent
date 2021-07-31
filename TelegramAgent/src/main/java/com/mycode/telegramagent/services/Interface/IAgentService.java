@@ -3,6 +3,11 @@ package com.mycode.telegramagent.services.Interface;
 import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.dto.PasswordChangeDto;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 public interface IAgentService {
     AgentDto signup(AgentDto agentDto);
 

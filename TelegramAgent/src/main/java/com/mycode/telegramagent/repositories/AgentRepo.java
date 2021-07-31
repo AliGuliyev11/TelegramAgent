@@ -6,6 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Repository of Agent
+ */
+
 public interface AgentRepo extends JpaRepository<Agent, Long> {
     Agent getAgentByHashCode(int agencyName);
 

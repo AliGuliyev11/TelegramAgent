@@ -5,6 +5,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 @Service
 public class LocaleMessageService {
     private Locale locale;
