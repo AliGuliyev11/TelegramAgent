@@ -4,6 +4,7 @@ import com.mycode.telegramagent.services.LifeCycle.AgentLifeCycle;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,7 @@ public class Agent {
     private Long id;
     private String email;
     private Boolean isVerified;
+    LocalDateTime createdDate;
     private String voen;
     private String agencyName;
     private String password;

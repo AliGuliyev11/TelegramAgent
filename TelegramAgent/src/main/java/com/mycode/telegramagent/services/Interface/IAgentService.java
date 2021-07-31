@@ -6,11 +6,7 @@ import com.mycode.telegramagent.dto.PasswordChangeDto;
 public interface IAgentService {
     AgentDto signup(AgentDto agentDto);
 
-//    void signin(AgentDto agentDto);
-
-//
-
-    Boolean verifyUser(int agencyName);
+    String verifyUser(int agencyName);
 
     void changePassword(String email, PasswordChangeDto passwordChangeDto);
 

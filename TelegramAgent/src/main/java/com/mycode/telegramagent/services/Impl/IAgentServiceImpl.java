@@ -18,6 +18,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,13 +41,13 @@ public class IAgentServiceImpl implements IAgentService {
     private static final String VOEN_REGEX = "[0-9]{10}";
 
     public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper,
-                             PasswordEncoder passwordEncoder,RoleRepo roleRepo) {
+                             PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
         this.environment = environment;
         this.agentDAO = agentDAO;
         this.emailService = emailService;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepo=roleRepo;
+        this.roleRepo = roleRepo;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class IAgentServiceImpl implements IAgentService {
             throw new NotFoundException("Agent not found");
         }
 
-        if (!passwordEncoder.matches(passwordChangeDto.getOldPass(),agent.getPassword())) {
+        if (!passwordEncoder.matches(passwordChangeDto.getOldPass(), agent.getPassword())) {
             throw new PasswordNotMatched();
         }
         updateUserPassword(email, passwordChangeDto.getNewPass());
@@ -137,16 +139,28 @@ public class IAgentServiceImpl implements IAgentService {
         emailService.sendSimpleMessage(agent.getEmail(), "Your new password", text);
     }
 
+    @Value("${agent.email.confirmation.limit}")
+    long limitConfirmationEmail;
 
     @Override
-    public Boolean verifyUser(int agencyName) {
+    public String verifyUser(int agencyName) {
+
         Agent agent = agentDAO.getAgentByHashCode(agencyName);
-        agent.setIsVerified(true);
-        agent.getRoles().clear();
-        Role role=roleRepo.getRoleByRolePriority(RolePriority.Standard);
-        agent.getRoles().add(role);
-        agentDAO.save(agent);
-        return true;
+        long minutes = ChronoUnit.MINUTES.between(agent.getCreatedDate(), LocalDateTime.now());
+        if (minutes <= limitConfirmationEmail) {
+            agent.setIsVerified(true);
+            agent.getRoles().clear();
+            Role role = roleRepo.getRoleByRolePriority(RolePriority.Standard);
+            agent.getRoles().add(role);
+            agentDAO.save(agent);
+            return "confirmed successfully";
+        } else {
+            if (agent != null) {
+                agentDAO.removeAgent(agent);
+            }
+            return "email expired";
+        }
+
     }
 
 }

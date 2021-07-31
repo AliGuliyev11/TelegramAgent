@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
@@ -24,11 +25,17 @@ public class AgentLifeCycle {
         this.emailService = emailService;
     }
 
+    @Value("${agent.email.confirmation.limit}")
+    long limitConfirmationEmail;
+
+    @Value("${email.verify.agent.url}")
+    String emailUrl;
 
     @PostPersist
     private void afterPost(Agent agent) {
-        String url = " http://localhost:8082/api/v1/auth/confirm/" + agent.getHashCode();
-        String text="Hi," + agent.getAgencyName() + ".This is confirmation link click <a href=" + url + ">here</a>";
+        String url = emailUrl + agent.getHashCode();
+        String text = "Hi," + agent.getAgencyName() + ".This is confirmation link click <a href=" + url + ">here</a>."
+                + "This link expired "+limitConfirmationEmail+" minutes after";
         emailService.sendSimpleMessage(agent.getEmail(), "Verification email",
                 text);
     }

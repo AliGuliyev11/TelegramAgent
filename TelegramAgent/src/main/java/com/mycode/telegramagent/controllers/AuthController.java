@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Ali Guliyev
  * @version 1.0
- * */
+ */
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -36,14 +36,13 @@ public class AuthController {
     @GetMapping(path = "confirm/{agency}")
     public String confirm(@PathVariable("agency") int agencyName, Model model) {
         model.addAttribute("name", agencyName);
-        agentService.verifyUser(agencyName);
-        return "confirmation";
+        return agentService.verifyUser(agencyName);
     }
 
     @GetMapping(path = "confirmed/{agency}")
     public String sendPassword(@PathVariable("agency") int agencyName) {
         agentService.sendPassword(agencyName);
-        return "confirmation";
+        return "confirmed and sended";
     }
 
 

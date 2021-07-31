@@ -223,7 +223,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {NotAnyOffer.class})
     public ResponseEntity<Object> handleNotAnyOfferException(NotAnyOffer ex, WebRequest request) {
 
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
                 ex.getLocalizedMessage(), "You haven't any offer.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
@@ -233,7 +233,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {NotAnyRequest.class})
     public ResponseEntity<Object> handleNotAnyRequestException(NotAnyRequest ex, WebRequest request) {
 
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND,
                 ex.getLocalizedMessage(), "You haven't any request.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());

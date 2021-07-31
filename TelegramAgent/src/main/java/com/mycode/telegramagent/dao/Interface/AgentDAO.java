@@ -4,7 +4,6 @@ import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.models.Agent;
 
 
-
 public interface AgentDAO {
 
     Agent signup(AgentDto agentDto);
@@ -20,4 +19,6 @@ public interface AgentDAO {
     Boolean checkEmail(String email);
 
     Agent getAgentByEmail(String email);
+
+    void removeAgent(Agent agent);
 }

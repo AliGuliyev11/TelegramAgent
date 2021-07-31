@@ -15,7 +15,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -50,9 +52,10 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
     public Agent signup(AgentDto agentDto) {
 
         Agent agent = objectMapper.convertValue(agentDto, Agent.class);
-        String hash = String.valueOf(agent.getAgencyName().hashCode()).replaceAll("-", "");
+        String hash = String.valueOf(agent.getEmail().hashCode()).replaceAll("-", "");
         agent.setHashCode(Integer.valueOf(hash));
         agent.setIsVerified(false);
+        agent.setCreatedDate(LocalDateTime.now());
         agent.setPassword(passwordEncoder.encode(agentDto.getPassword()));
         Role role = roleRepo.getRoleByRolePriority(RolePriority.Initial);
         agent.getRoles().add(role);
@@ -122,5 +125,10 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
     @Override
     public Agent getAgentByEmail(String email) {
         return agentRepo.getAgentByEmail(email);
+    }
+
+    @Override
+    public void removeAgent(Agent agent) {
+        agentRepo.delete(agent);
     }
 }
