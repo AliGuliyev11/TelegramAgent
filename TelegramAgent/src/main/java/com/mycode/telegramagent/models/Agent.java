@@ -33,4 +33,5 @@ public class Agent {
     private int hashCode;
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles=new ArrayList<>();
+
 }

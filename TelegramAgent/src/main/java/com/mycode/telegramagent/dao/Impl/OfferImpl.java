@@ -89,7 +89,7 @@ public class OfferImpl implements OfferDAO {
         offer.setUserRequest(order);
         Offer savedOffer = offerRepo.save(offer);
         RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
-        offerService.send(rabbitOffer);
+//        offerService.send(rabbitOffer);
         order.setOffer(savedOffer);
         userRequest.save(order);
         return savedOffer;

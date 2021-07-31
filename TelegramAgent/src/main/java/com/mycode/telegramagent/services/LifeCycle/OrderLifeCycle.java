@@ -23,8 +23,6 @@ public class OrderLifeCycle {
 
     @PostLoad
     private void beforeUpdate(UserRequest userRequest) {
-        System.out.println(userRequest.getExpiredDate().isBefore(LocalDateTime.now()));
-        System.out.println(userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made));
         if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) && userRequest.getExpiredDate().isBefore(LocalDateTime.now())) {
             System.out.println("BB");
             rabbitOfferService.warn(WarningDto.builder().text("Diqqet diqqetttttttttttt").userId(userRequest.getUserId()).build());
