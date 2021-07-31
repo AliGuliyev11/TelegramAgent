@@ -1,18 +1,16 @@
 package com.mycode.telegramagent.exceptions.handlers;
 
 import com.mycode.telegramagent.exceptions.*;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,18 +34,6 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class})
-    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        List<String> errors = new ArrayList<>();
-        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            errors.add(violation.getRootBeanClass().getName() + " " +
-                    violation.getPropertyPath() + ": " + violation.getMessage());
-        }
-
-        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return new ResponseEntity<>(
-                errorMessage, new HttpHeaders(), errorMessage.getStatus());
-    }
 
     @ExceptionHandler(value = {MethodNotAllowedException.class})
     public ResponseEntity<Object> handleMethodNotAllowedException(MethodNotAllowedException ex,
@@ -319,6 +305,16 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
                 ex.getLocalizedMessage(), "Please,add your VOEN correctly.");
+        return new ResponseEntity<>(
+                errorMessage, new HttpHeaders(), errorMessage.getStatus());
+
+    }
+
+    @ExceptionHandler(value = {RequestAccepted.class})
+    public ResponseEntity<Object> handleRequestAcceptedException(RequestAccepted ex, WebRequest request) {
+
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
+                ex.getLocalizedMessage(), "Accepted request cannot be moved from archive to incoming requests.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
 

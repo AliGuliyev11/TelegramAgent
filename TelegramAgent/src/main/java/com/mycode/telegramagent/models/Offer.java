@@ -4,6 +4,8 @@ package com.mycode.telegramagent.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.File;
@@ -29,8 +31,9 @@ public class Offer implements Serializable {
     Date endDate;
     String note;
     Double price;
-    @OneToOne
+    @OneToOne(targetEntity = UserRequest.class)
     @JsonManagedReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
     UserRequest userRequest;
     @ManyToOne
     Agent agent;

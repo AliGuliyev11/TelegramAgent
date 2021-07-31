@@ -8,6 +8,8 @@ import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -38,7 +40,8 @@ public class UserRequest {
     AgentRequestStatus agentRequestStatus;
     @ManyToOne
     Agent agent;
-    @OneToOne
+    @OneToOne(targetEntity = Offer.class,orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     Offer offer;
 

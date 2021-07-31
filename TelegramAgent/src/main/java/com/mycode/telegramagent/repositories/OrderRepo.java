@@ -23,14 +23,15 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
     List<UserRequest> getAllActiveRequestByAgent(String email);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
-            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='New_Request'",nativeQuery = true)
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='New_Request'", nativeQuery = true)
     List<UserRequest> getAllNewRequestByAgent(String email);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
-            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Offer_Made'",nativeQuery = true)
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Offer_Made'", nativeQuery = true)
     List<UserRequest> getAllOfferMadeRequestByAgent(String email);
+
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
-            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Accepted'",nativeQuery = true)
+            "u.agent_request_status!='Expired'and u.request_status!='De_Active' AND u.agent_request_status='Accepted'", nativeQuery = true)
     List<UserRequest> getAllAcceptedRequestByAgent(String email);
 
     @Query(value = "SELECT * FROM user_request u JOIN agent a ON u.agent_id=a.id where a.email=:email and " +
@@ -48,5 +49,11 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
             "CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR)," +
             " 'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:date as TIMESTAMP)", nativeQuery = true)
     List<UserRequest> getExpiredUserRequest(String date);
+
+    @Modifying
+    @Query(value = "DELETE FROM user_request u where (CAST(u.expired_date as DATE)=cast(:date as date)" +
+            " OR CAST(u.expired_date as DATE)<cast(:date as date)) AND u.agent_request_status='Expired' " +
+            "and u.request_status='De_Active'", nativeQuery = true)
+    void checkAndDeleteExpiredRequest(String date);
 
 }

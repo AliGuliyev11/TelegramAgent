@@ -3,8 +3,10 @@ package com.mycode.telegramagent.services.quartz.RequestExpChecker;
 import com.mycode.telegramagent.exceptions.OfferNotWorkingHour;
 import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
 import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
+import com.mycode.telegramagent.services.quartz.RequestExpChecker.RequestChecker;
 import lombok.SneakyThrows;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -31,7 +33,7 @@ public class RequestCheckerConf {
 
 
     @Bean
-    public JobDetail issuesSync() {
+    public JobDetail checker() {
         return JobBuilder.newJob(RequestChecker.class)
                 .withIdentity("requestChecker", "requestCheckerJob")
                 .storeDurably(true)
@@ -40,7 +42,7 @@ public class RequestCheckerConf {
 
     @SneakyThrows
     @Bean
-    public Trigger triggerIssues(JobDetail jobDetail) {
+    public Trigger triggerChecker(@Qualifier("checker") JobDetail jobDetail) {
 
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         Date start = format.parse(beginTime);

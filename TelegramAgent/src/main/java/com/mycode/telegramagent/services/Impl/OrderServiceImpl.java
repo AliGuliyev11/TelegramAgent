@@ -50,6 +50,8 @@ public class OrderServiceImpl implements IOrderService {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
             throw new RequestExpired();
+        } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Accepted)) {
+            throw new RequestAccepted();
         }
         userRequest.setRequestStatus(RequestStatus.Active);
         orderDAO.saveUserRequest(userRequest);

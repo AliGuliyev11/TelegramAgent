@@ -26,4 +26,5 @@ public interface OrderDAO {
     UserRequest getUserRequestByIdAndAgentEmail(Long id, String email);
 
     void saveUserRequest(UserRequest userRequest);
+    void checkAndDeleteRequest(String day);
 }

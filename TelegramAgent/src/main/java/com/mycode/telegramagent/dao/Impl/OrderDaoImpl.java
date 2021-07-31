@@ -137,4 +137,10 @@ public class OrderDaoImpl implements OrderDAO {
     public List<UserRequest> getAllAcceptedRequests(String email) {
         return orderRepo.getAllAcceptedRequestByAgent(email);
     }
+
+    @Transactional
+    @Override
+    public void checkAndDeleteRequest(String day) {
+        orderRepo.checkAndDeleteExpiredRequest(day);
+    }
 }

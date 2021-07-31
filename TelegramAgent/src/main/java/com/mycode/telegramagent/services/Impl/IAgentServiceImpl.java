@@ -11,35 +11,13 @@ import com.mycode.telegramagent.models.Role;
 import com.mycode.telegramagent.repositories.RoleRepo;
 import com.mycode.telegramagent.services.Interface.IAgentService;
 import com.mycode.telegramagent.services.email.EmailServiceImpl;
+import javassist.NotFoundException;
 import lombok.SneakyThrows;
-import org.apache.commons.text.RandomStringGenerator;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.CreatedResponseUtil;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.RolesResource;
-import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.authorization.client.AuthzClient;
-import org.keycloak.authorization.client.Configuration;
-import org.keycloak.representations.AccessTokenResponse;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Email;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,19 +48,6 @@ public class IAgentServiceImpl implements IAgentService {
         this.roleRepo=roleRepo;
     }
 
-    @Value("${keycloak.auth-server-url}")
-    private String authServerUrl;
-    @Value("${keycloak.realm}")
-    private String realm;
-    @Value("${keycloak.resource}")
-    private String clientId;
-    @Value("${keycloak.credentials.secret}")
-    private String clientSecret;
-    @Value("${app.keycloak.initial.role}")
-    private String initialRole;
-    @Value("${app.keycloak.standard.role}")
-    private String standardRole;
-
     @Override
     public AgentDto signup(AgentDto agentDto) {
         regexValidation(agentDto);
@@ -110,11 +75,12 @@ public class IAgentServiceImpl implements IAgentService {
         return matcher.matches();
     }
 
+    @SneakyThrows
     @Override
     public void changePassword(String email, PasswordChangeDto passwordChangeDto) {
         Agent agent = agentDAO.getAgentByEmail(email);
         if (agent == null) {
-            throw new NotFoundException();
+            throw new NotFoundException("Agent not found");
         }
 
         if (!passwordEncoder.matches(passwordChangeDto.getOldPass(),agent.getPassword())) {
@@ -123,10 +89,11 @@ public class IAgentServiceImpl implements IAgentService {
         updateUserPassword(email, passwordChangeDto.getNewPass());
     }
 
+    @SneakyThrows
     private void updateUserPassword(String email, String newPass) {
         Agent agent = agentDAO.getAgentByEmail(email);
         if (agent == null) {
-            throw new NotFoundException();
+            throw new NotFoundException("Agent not found");
         }
         agent.setPassword(passwordEncoder.encode(newPass));
         agentDAO.save(agent);
