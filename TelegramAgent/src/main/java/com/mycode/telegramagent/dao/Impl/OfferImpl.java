@@ -6,6 +6,7 @@ import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.RabbitOffer;
 import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
+import com.mycode.telegramagent.exceptions.NotAnyOffer;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
@@ -71,6 +72,18 @@ public class OfferImpl implements OfferDAO {
     @Value("${working.days}")
     String[] workingDays;
 
+    /**
+     * This request for save and send offer
+     *
+     * @param uuid     bot user id
+     * @param email    agent email
+     * @param offerDto current offer by agent
+     * @return Offer
+     * @apiNote First, program get agent and user request
+     * then set expired date which properties goes from application.properties.Convert text to Jasper image and send user
+     * Need transactional for getting user request because user request has @Lob column
+     */
+
     @SneakyThrows
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -96,10 +109,18 @@ public class OfferImpl implements OfferDAO {
         return savedOffer;
     }
 
+
+    /**
+     * This method for when user accept offer change request status and add user data to offer
+     * Need transactional for getting user request because user request has @Lob column
+     *
+     * @param replyToOffer DTO which comes from user
+     */
+
     @Override
     @Transactional
     public void offerAccepted(ReplyToOffer replyToOffer) {
-        Offer offer = offerRepo.findById(replyToOffer.getOfferId()).get();
+        Offer offer = offerRepo.findById(replyToOffer.getOfferId()).orElseThrow(NotAnyOffer::new);
         offer.setAcceptedDate(new Date());
         offer.setPhoneNumber(replyToOffer.getPhoneNumber());
         UserRequest userRequest = offer.getUserRequest();
@@ -108,16 +129,35 @@ public class OfferImpl implements OfferDAO {
         offerRepo.save(offer);
     }
 
+    /**
+     * This method for get logged in user request
+     *
+     * @param uuid  user id
+     * @param email current agent email
+     * @return UserRequest
+     */
+
     @Override
     public UserRequest getRequestByUUIDAndEmail(String uuid, String email) {
         return userRequest.getOrderByUserId(uuid, email);
     }
+
+    /**
+     * This method for get logged in user offers
+     *
+     * @param email current agent email
+     * @return List<Offer>
+     */
 
     @Override
     public List<Offer> getAgentOffers(String email) {
         return offerRepo.getOffersByAgent_Email(email);
     }
 
+    /** This method for get logged in user offer
+     * @param email current agent email
+     * @param id offer id
+     * @return Offer*/
 
     @Override
     @Transactional

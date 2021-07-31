@@ -5,7 +5,11 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This DTO for getting accepted offer data
+ */
 
 @Getter
 @Setter

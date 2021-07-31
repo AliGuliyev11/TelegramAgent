@@ -11,8 +11,12 @@ import java.util.List;
 
 public interface OfferDAO {
     Offer saveOffer(String userId, String email, OfferDto offerDto);
-    Offer getOfferById(String email,Long id);
+
+    Offer getOfferById(String email, Long id);
+
     UserRequest getRequestByUUIDAndEmail(String uuid, String email);
+
     List<Offer> getAgentOffers(String email);
+
     void offerAccepted(ReplyToOffer replyToOffer);
 }

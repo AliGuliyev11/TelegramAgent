@@ -1,6 +1,5 @@
 package com.mycode.telegramagent.dao.Impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
@@ -16,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,9 +28,9 @@ import java.util.Collection;
 @Component
 public class AgentImpl implements AgentDAO, UserDetailsService {
 
-    private AgentRepo agentRepo;
-    private ObjectMapper objectMapper;
-    private RoleRepo roleRepo;
+    private final AgentRepo agentRepo;
+    private final ObjectMapper objectMapper;
+    private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
 
     public AgentImpl(AgentRepo agentRepo, ObjectMapper objectMapper, RoleRepo roleRepo, PasswordEncoder passwordEncoder) {
@@ -54,7 +52,7 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
 
         Agent agent = objectMapper.convertValue(agentDto, Agent.class);
         String hash = String.valueOf(agent.getEmail().hashCode()).replaceAll("-", "");
-        agent.setHashCode(Integer.valueOf(hash));
+        agent.setHashCode(Integer.parseInt(hash));
         agent.setIsVerified(false);
         agent.setCreatedDate(LocalDateTime.now());
         agent.setPassword(passwordEncoder.encode(agentDto.getPassword()));
@@ -64,6 +62,11 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
         return agent;
     }
 
+    /** This method for security
+     * @apiNote This method for authentication user and give user some roles for authorization
+     * @param email user find by email
+     * @return UserDetails*/
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Agent agent = agentRepo.getVerifiedAgent(email);
@@ -71,9 +74,7 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
             throw new UsernameNotFoundException("Agent not found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        agent.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        });
+        agent.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new User(agent.getEmail(), agent.getPassword(), authorities);
     }
 
@@ -113,20 +114,47 @@ public class AgentImpl implements AgentDAO, UserDetailsService {
         return agentRepo.checkAgency(agencyName);
     }
 
+    /**
+     * This method checks company name is unique or not
+     *
+     * @param company current company name
+     * @return Boolean
+     */
+
     @Override
     public Boolean checkCompanyName(String company) {
         return agentRepo.checkCompany(company);
     }
+
+    /**
+     * This method checks email is unique or not
+     *
+     * @param email current agency email
+     * @return Boolean
+     */
 
     @Override
     public Boolean checkEmail(String email) {
         return agentRepo.checkEmail(email);
     }
 
+    /**
+     * This method for get Agent by email
+     *
+     * @param email current agency name
+     * @return Agent
+     */
+
     @Override
     public Agent getAgentByEmail(String email) {
         return agentRepo.getAgentByEmail(email);
     }
+
+    /**
+     * This method for delete Agent from database
+     *
+     * @param agent deleted agent
+     */
 
     @Override
     public void removeAgent(Agent agent) {

@@ -6,9 +6,7 @@ import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.services.Interface.IOfferService;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 /**

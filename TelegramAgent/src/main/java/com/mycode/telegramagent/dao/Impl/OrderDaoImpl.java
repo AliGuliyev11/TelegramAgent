@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.RequestStatus;
+import com.mycode.telegramagent.exceptions.RequestNotFound;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.repositories.AgentRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
 import org.json.JSONObject;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,14 +24,13 @@ import static com.mycode.telegramagent.utils.ExpiredDateGenerator.getExpiredDate
 /**
  * @author Ali Guliyev
  * @version 1.0
- * */
+ */
 
 @Component
 public class OrderDaoImpl implements OrderDAO {
 
     private final OrderRepo orderRepo;
     private final AgentRepo agentRepo;
-    private ModelMapper modelMapper = new ModelMapper();
 
     public OrderDaoImpl(OrderRepo orderRepo, AgentRepo agentRepo) {
         this.orderRepo = orderRepo;
@@ -47,13 +46,19 @@ public class OrderDaoImpl implements OrderDAO {
     @Value("${working.days}")
     String[] workingDays;
 
+    /**
+     * This method for adding request to every verified user
+     *
+     * @param order Map which getting from queue(answer of Bot's question )
+     */
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void addOrder(Map<String, String> order) {
         Gson gson = new Gson();
         String json = gson.toJson(order);
-        JSONObject jsonObject=new JSONObject(json);
-        String uuid=jsonObject.getString("uuid");
+        JSONObject jsonObject = new JSONObject(json);
+        String uuid = jsonObject.getString("uuid");
         List<Agent> agentList = agentRepo.getVerifiedAgents();
         LocalDateTime expiredDate = getExpiredDate(beginTime, endTime, expiredTime, workingDays);
         for (var item : agentList) {
@@ -69,9 +74,23 @@ public class OrderDaoImpl implements OrderDAO {
         }
     }
 
+    /**
+     * This method for save user request
+     *
+     * @param userRequest user request for save
+     */
+
     public void saveUserRequest(UserRequest userRequest) {
         orderRepo.save(userRequest);
     }
+
+    /**
+     * This method fro ass user request to archive
+     *
+     * @param email current logged in agent's email
+     * @param id    user request's id
+     * @return UserRequest
+     */
 
     @Override
     public UserRequest addToArchive(String email, Long id) {
@@ -81,10 +100,24 @@ public class OrderDaoImpl implements OrderDAO {
         return userRequest;
     }
 
+    /**
+     * This method for getting user request of logged in agent
+     *
+     * @param id    user request id
+     * @param email current logged in agent
+     * @return UserRequest
+     */
+
     @Override
     public UserRequest getUserRequestByIdAndAgentEmail(Long id, String email) {
         return orderRepo.getUserRequestByIdAndAgent_Email(id, email);
     }
+
+    /**
+     * Check expired  request and if user request expires set De_Active and Expired status
+     *
+     * @param date date time now
+     */
 
     @Transactional
     @Override
@@ -92,11 +125,28 @@ public class OrderDaoImpl implements OrderDAO {
         orderRepo.checkAndExpireRequest(date);
     }
 
+    /**
+     * This method for getting expired requests
+     *
+     * @param date date time now
+     * @return List<UserRequest>
+     * Need transactional for getting user request because user request has @Lob column
+     * @apiNote With the help of this method if this method not return null it enter OrderLifeCycle class
+     */
+
     @Transactional
     @Override
     public List<UserRequest> getExpiredRequests(String date) {
         return orderRepo.getExpiredUserRequest(date);
     }
+
+    /**
+     * This method for get all archived user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @apiNote Need transactional for getting user request because user request has @Lob column
+     */
 
     @Override
     @Transactional
@@ -104,9 +154,16 @@ public class OrderDaoImpl implements OrderDAO {
         return orderRepo.getAllArchivedRequests(email);
     }
 
+    /**
+     * This method for get getting user request by id
+     *
+     * @param id user request id
+     * @return UserRequest
+     */
+
     @Override
     public UserRequest getOrderById(Long id) {
-        return orderRepo.findById(id).get();
+        return orderRepo.findById(id).orElseThrow(RequestNotFound::new);
     }
 
     @Override
@@ -114,11 +171,27 @@ public class OrderDaoImpl implements OrderDAO {
         orderRepo.getUserRequestByUserId(uuid);
     }
 
+    /**
+     * This method for get all user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @apiNote Need transactional for getting user request because user request has @Lob column
+     */
+
     @Override
     @Transactional
     public List<UserRequest> getAllRequests(String email) {
         return orderRepo.getAllActiveRequestByAgent(email);
     }
+
+    /**
+     * This method for get all new type user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @apiNote Need transactional for getting user request because user request has @Lob column
+     */
 
     @Override
     @Transactional
@@ -126,17 +199,39 @@ public class OrderDaoImpl implements OrderDAO {
         return orderRepo.getAllNewRequestByAgent(email);
     }
 
+    /**
+     * This method for get all offer made user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @apiNote Need transactional for getting user request because user request has @Lob column
+     */
+
     @Override
     @Transactional
     public List<UserRequest> getAllOfferMadeRequests(String email) {
         return orderRepo.getAllOfferMadeRequestByAgent(email);
     }
 
+    /**
+     * This method for get all accepted type user requests
+     *
+     * @param email current logged in agent's email
+     * @return List<UserRequest>
+     * @apiNote Need transactional for getting user request because user request has @Lob column
+     */
+
     @Override
     @Transactional
     public List<UserRequest> getAllAcceptedRequests(String email) {
         return orderRepo.getAllAcceptedRequestByAgent(email);
     }
+
+    /**
+     * This method for delete request when expired date passed X days(see application.properties)
+     *
+     * @param day days between expired date and now
+     */
 
     @Transactional
     @Override

@@ -51,16 +51,16 @@ public class OfferServiceImpl implements IOfferService {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
 
         checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
-//        if (userRequest == null) {
-//            throw new RequestNotFound();
-//        } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||
-//                userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Accepted)) {
-//            throw new YouAlreadyMakeOffer();
-//        } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
-//            throw new RequestExpired();
-//        } else if (userRequest.getRequestStatus().equals(RequestStatus.De_Active)) {
-//            throw new RequestInArchive();
-//        }
+        if (userRequest == null) {
+            throw new RequestNotFound();
+        } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||
+                userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Accepted)) {
+            throw new YouAlreadyMakeOffer();
+        } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
+            throw new RequestExpired();
+        } else if (userRequest.getRequestStatus().equals(RequestStatus.De_Active)) {
+            throw new RequestInArchive();
+        }
         JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
         validation(offerDto, jsonObject.getInt("Orderbudget"));
         checkStartDate(offerDto.getStartDate(), jsonObject.getString("Orderdate"), jsonObject.getLong("Orderdateto"));

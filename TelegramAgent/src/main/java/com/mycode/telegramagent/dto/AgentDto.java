@@ -2,6 +2,11 @@ package com.mycode.telegramagent.dto;
 
 import lombok.*;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This DTO for sign up
+ */
 
 @Getter
 @Setter

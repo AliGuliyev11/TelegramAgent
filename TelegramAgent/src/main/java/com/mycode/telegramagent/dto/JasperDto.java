@@ -5,6 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This DTO for Jasper image
+ */
 
 @Getter
 @Setter

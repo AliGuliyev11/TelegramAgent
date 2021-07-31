@@ -9,6 +9,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote This DTO for sending offer to user
+ */
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
