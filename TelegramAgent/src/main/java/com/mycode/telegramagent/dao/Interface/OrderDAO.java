@@ -38,4 +38,5 @@ public interface OrderDAO {
     void saveUserRequest(UserRequest userRequest);
 
     void checkAndDeleteRequest(String day);
+    Boolean checkAgentMadeOfferOrNot(String day);
 }

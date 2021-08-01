@@ -1,11 +1,15 @@
 package com.mycode.telegramagent.services.quartz.RequestExpChecker;
 
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
+import com.mycode.telegramagent.dto.WarningDto;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
+import com.mycode.telegramagent.repositories.JasperMessageRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
 import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
+import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static com.mycode.telegramagent.dto.WarningDto.*;
+import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
+
 
 /**
  * @author Ali Guliyev
@@ -32,14 +39,20 @@ import java.util.List;
 public class RequestChecker extends QuartzJobBean {
 
     OrderDAO dao;
+    RabbitOfferService rabbitOfferService;
+    JasperMessageRepo jasperMessageRepo;
+    LocaleMessageService localeMessageService;
 
-    public RequestChecker(OrderDAO dao) {
+    public RequestChecker(OrderDAO dao, RabbitOfferService rabbitOfferService,
+                          JasperMessageRepo jasperMessageRepo, LocaleMessageService localeMessageService) {
         this.dao = dao;
+        this.rabbitOfferService = rabbitOfferService;
+        this.jasperMessageRepo = jasperMessageRepo;
+        this.localeMessageService = localeMessageService;
     }
 
     /**
      * Check user request status
-     * If
      */
 
     @SneakyThrows
@@ -51,6 +64,18 @@ public class RequestChecker extends QuartzJobBean {
         String strDate = dateFormat.format(date);
         List<UserRequest> userRequestList = dao.getExpiredRequests(strDate);
         System.out.println(userRequestList.size());
+
+        for (var item : userRequestList) {
+            if (!dao.checkAgentMadeOfferOrNot(item.getUserId())) {
+                JSONObject jsonObject = new JSONObject(item.getUserRequest());
+                String language = jsonObject.getString("lang");
+                rabbitOfferService.warn(WarningDto.builder()
+                        .text(getJasperMessage("warning.message", language, jasperMessageRepo, localeMessageService))
+                        .userId(item.getUserId()).build());
+            }
+        }
+
+
         dao.requestChecker(strDate);
         System.out.println(strDate);
     }

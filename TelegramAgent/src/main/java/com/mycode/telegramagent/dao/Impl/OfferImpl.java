@@ -123,12 +123,10 @@ public class OfferImpl implements OfferDAO {
     @Override
     @Transactional
     public void offerAccepted(ReplyToOffer replyToOffer) {
-        Offer offer = offerRepo.findById(replyToOffer.getOfferId()).orElseThrow(NotAnyOffer::new);
+        Offer offer = offerRepo.findById(replyToOffer.getOfferId()).orElse(null);
         if (offer != null) {
             UserRequest userRequest = offer.getUserRequest();
             if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
-                System.out.println("Offer id"+offer.getId());
-                System.out.println("Girir bura");
                 JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
                 String language = jsonObject.getString("lang");
                 offerService.warn(WarningDto.builder()

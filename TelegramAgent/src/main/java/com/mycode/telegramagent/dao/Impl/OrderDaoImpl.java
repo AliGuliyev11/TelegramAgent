@@ -241,4 +241,16 @@ public class OrderDaoImpl implements OrderDAO {
     public void checkAndDeleteRequest(String day) {
         orderRepo.checkAndDeleteExpiredRequest(day);
     }
+
+    /**
+     * This method checks user request
+     * @apiNote checks some of the agents made offer to this request or nor
+     *
+     * @param userId user id
+     */
+
+    @Override
+    public Boolean checkAgentMadeOfferOrNot(String userId) {
+        return orderRepo.checkOfferMadeOrNot(userId);
+    }
 }

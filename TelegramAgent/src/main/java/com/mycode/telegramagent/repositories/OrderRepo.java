@@ -67,9 +67,8 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
             "u.user_id=:userId and (u.agent_request_status='Offer_Made' or u.agent_request_status='Accepted')", nativeQuery = true)
     LocalDateTime getUserRequestLocalDatetimeByUserID(String userId);
 
-    @Query(value = "SELECT CASE WHEN EXISTS (SELECT * from user_request u where " +
-            "CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR),'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:date as TIMESTAMP)" +
-            " AND (u.agent_request_status='Offer_Made' or u.agent_request_status='Accepted' ))THEN true ELSE FALSE END", nativeQuery = true)
-    Boolean checkOfferMadeOrNot(String date);
+    @Query(value = "SELECT CASE WHEN EXISTS (SELECT * from user_request u where u.user_id=:userId" +
+            " AND (u.agent_request_status='Offer_Made' or u.agent_request_status='Accepted'))THEN true ELSE FALSE END", nativeQuery = true)
+    Boolean checkOfferMadeOrNot(String userId);
 
 }
