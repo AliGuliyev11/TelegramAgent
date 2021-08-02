@@ -8,6 +8,11 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 @SpringBootApplication
 public class TelegramAgentApplication {
 
@@ -21,10 +26,6 @@ public class TelegramAgentApplication {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
-//        return new KeycloakSpringBootConfigResolver();
-//    }
 
     @Bean
     public MessageSource messageSource() {

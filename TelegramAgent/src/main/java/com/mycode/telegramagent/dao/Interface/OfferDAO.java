@@ -8,6 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 public interface OfferDAO {
     Offer saveOffer(String userId, String email, OfferDto offerDto);

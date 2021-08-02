@@ -12,8 +12,25 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Every returned second of LocalDateTime must be 59
+ */
+
+
 public class ExpiredDateGenerator {
 
+
+    /**
+     * Expired date generator method
+     *
+     * @param beginTime   working hour beginning time,see application.properties
+     * @param endTime     working hour ending time,see application.properties
+     * @param expiredTime life time of request
+     * @param workingDays working day,see application.properties
+     * @return LocalDateTime
+     */
 
     @SneakyThrows
     public static LocalDateTime getExpiredDate(String beginTime, String endTime, int expiredTime, String[] workingDays) {
@@ -22,7 +39,7 @@ public class ExpiredDateGenerator {
         Date end = format.parse(endTime);
         long difference = end.getTime() - start.getTime();
         long diffMinutes = difference / (60 * 1000);
-        long requestMinutes = expiredTime * 60;
+        long requestMinutes = expiredTime * 60L;
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
         LocalDateTime localDateTime = LocalDateTime.now();
         String formatDateTime = localDateTime.format(dtf);
@@ -31,8 +48,8 @@ public class ExpiredDateGenerator {
         long isInWorkHour = diffEndTimeNow / (60 * 1000);
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(Date.from(Instant.now()));
-        if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK) - 1)))) {
-            return notWorkingDay(requestMinutes, diffMinutes, isInWorkHour, start, workingDays);
+        if (Arrays.stream(workingDays).noneMatch(a -> a.equals(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK) - 1)))) {
+            return notWorkingDay(requestMinutes, diffMinutes, start, workingDays);
         } else if (now.after(end)) {
             return nowAfterEnd(requestMinutes, diffMinutes, start, workingDays);
         } else {
@@ -51,7 +68,17 @@ public class ExpiredDateGenerator {
         return null;
     }
 
-    private static LocalDateTime notWorkingDay(long requestMinutes, long diffMinutes, long isInWorkHour,
+    /**
+     * This method for if LocalDateTime.now() day not matched with working day
+     *
+     * @param requestMinutes life time of request(convert hour to minute)
+     * @param diffMinutes    difference  minutes between start and end working hour
+     * @param start          working hour beginning time,see application.properties
+     * @param workingDays    working days,see application.properties
+     * @return LocalDateTime
+     */
+
+    private static LocalDateTime notWorkingDay(long requestMinutes, long diffMinutes,
                                                Date start, String[] workingDays) {
         long day = requestMinutes / diffMinutes;
         long theRestMinute = requestMinutes - diffMinutes * day;
@@ -63,6 +90,15 @@ public class ExpiredDateGenerator {
                 .withMinute(calendar.get(Calendar.MINUTE)).plusDays(day).plusMinutes(theRestMinute);
     }
 
+    /**
+     * This method for if LocalDateTime.now() day is in working day but not in working hour
+     *
+     * @param requestMinutes life time of request(convert hour to minute)
+     * @param diffMinutes    difference  minutes between start and end working hour
+     * @param start          working hour beginning time,see application.properties
+     * @param workingDays    working days,see application.properties
+     * @return LocalDateTime
+     */
 
     public static LocalDateTime nowAfterEnd(long requestMinutes, long diffMinutes, Date start, String[] workingDays) {
         long day = requestMinutes / diffMinutes;
@@ -76,11 +112,22 @@ public class ExpiredDateGenerator {
     }
 
 
+    /**
+     * This method for if LocalDateTime.now() day is in working day and in working hours.But not expired today
+     *
+     * @param requestMinutes life time of request(convert hour to minute)
+     * @param diffMinutes    difference  minutes between start and end working hour
+     * @param isInWorkHour   difference minutes between end and now
+     * @param workingDays    working day see,application.properties
+     * @param localDateTime  LocalDateTime.now()
+     * @return LocalDateTime
+     */
+
     public static LocalDateTime isNotWorkingHours(long requestMinutes, long diffMinutes, long isInWorkHour,
                                                   LocalDateTime localDateTime, String[] workingDays) {
         requestMinutes = requestMinutes - isInWorkHour;
         requestMinutes = diffMinutes - requestMinutes;
-        int minute = Integer.valueOf(String.valueOf(isInWorkHour));
+        int minute = Integer.parseInt(String.valueOf(isInWorkHour));
         int withMinute = localDateTime.getMinute() + minute;
         long day = 1;
         day = getDayInWorkDays(day, workingDays);
@@ -88,6 +135,17 @@ public class ExpiredDateGenerator {
                 .withMinute(withMinute % 10).plusDays(day).minusMinutes(requestMinutes);
     }
 
+
+    /**
+     * This method for if expired day must be minimum 2 day after
+     *
+     * @param requestMinutes life time of request(convert hour to minute)
+     * @param diffMinutes    difference  minutes between start and end working hour
+     * @param isInWorkHour   difference minutes between end and now
+     * @param workingDays    working day see application.properties
+     * @param start          working hour beginning time,see application.properties
+     * @return LocalDateTime
+     */
 
     public static LocalDateTime reqMinBigThanDiffMin(long requestMinutes, long diffMinutes, long isInWorkHour, Date start, String[] workingDays) {
         requestMinutes = requestMinutes - isInWorkHour;
@@ -102,6 +160,14 @@ public class ExpiredDateGenerator {
     }
 
 
+    /**
+     * This method for checks if LocalDateTime.now() day is in working day or not
+     *
+     * @param day day which not checked for working days
+     * @param weekdays    working day,see application.properties
+     * @return LocalDateTime
+     */
+
     public static long getDayInWorkDays(Long day, String[] weekdays) {
         Date date = new Date();
         int d = 0;
@@ -110,8 +176,7 @@ public class ExpiredDateGenerator {
             calendar.setTime(date);
             calendar.set(Calendar.HOUR_OF_DAY, i * 24);
             int weekDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-            if (Arrays.stream(weekdays).anyMatch(a -> a.equals(String.valueOf(weekDay)))) {
-            } else {
+            if (Arrays.stream(weekdays).noneMatch(a -> a.equals(String.valueOf(weekDay)))) {
                 d++;
             }
         }
@@ -119,6 +184,14 @@ public class ExpiredDateGenerator {
 
         return d + day;
     }
+
+    /**
+     * This method for checks if LocalDateTime.now() day is in working day or not(After now)
+     *
+     * @param day day which not checked for working days
+     * @param weekdays    working day,see application.properties
+     * @return LocalDateTime
+     */
 
     public static long getDayInWorkDaysAfterNow(Long day, String[] weekdays) {
         Date date = new Date();
@@ -128,13 +201,21 @@ public class ExpiredDateGenerator {
             calendar.setTime(date);
             calendar.set(Calendar.HOUR_OF_DAY, i * 24);
             int weekDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-            if (!Arrays.stream(weekdays).anyMatch(a -> a.equals(String.valueOf(weekDay)))) {
+            if (Arrays.stream(weekdays).noneMatch(a -> a.equals(String.valueOf(weekDay)))) {
                 d++;
             }
         }
         d = checkOtherWeekDays(d, day, date, weekdays);
         return d + day;
     }
+
+    /**
+     * This method for checks if LocalDateTime.now() day is in working day or not(Last checker)
+     *
+     * @param day day which not checked for working days
+     * @param weekdays    working day,see application.properties
+     * @return LocalDateTime
+     */
 
     public static int checkOtherWeekDays(int d, Long day, Date date, String[] weekdays) {
         for (long i = d + day; i <= 7; i++) {

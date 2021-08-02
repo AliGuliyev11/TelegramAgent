@@ -1,7 +1,9 @@
 package com.mycode.telegramagent.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 public class EmailNotVerified extends RuntimeException{
     public EmailNotVerified() {

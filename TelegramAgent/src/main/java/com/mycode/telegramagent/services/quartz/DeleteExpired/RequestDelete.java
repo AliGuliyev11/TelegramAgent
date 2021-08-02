@@ -1,8 +1,6 @@
 package com.mycode.telegramagent.services.quartz.DeleteExpired;
 
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
-import com.mycode.telegramagent.models.UserRequest;
-import com.mycode.telegramagent.repositories.OrderRepo;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.DateUtils;
 import org.quartz.JobExecutionContext;
@@ -10,15 +8,15 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 @Configuration
 public class RequestDelete extends QuartzJobBean {
@@ -31,6 +29,9 @@ public class RequestDelete extends QuartzJobBean {
 
     @Value("${delete.request.time.range}")
     int day;
+
+    /**This worker for delete expired request
+     *@implNote Get day from application.properties and checks from database if request expired X days before delete it */
 
     @SneakyThrows
     @Override

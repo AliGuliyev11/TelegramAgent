@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Class for generate random password,if agent clicks forgot password
+ */
+
 public class PasswordCreator {
 
 

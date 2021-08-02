@@ -5,6 +5,11 @@ import com.mycode.telegramagent.models.UserRequest;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 public interface OrderDAO {
     void addOrder(Map<String, String> order);
 

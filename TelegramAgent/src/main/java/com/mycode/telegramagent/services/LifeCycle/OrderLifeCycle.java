@@ -2,14 +2,20 @@ package com.mycode.telegramagent.services.LifeCycle;
 
 import com.mycode.telegramagent.dto.WarningDto;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
-import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
+import com.mycode.telegramagent.repositories.JasperMessageRepo;
+import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import lombok.*;
+import org.aspectj.weaver.ast.Or;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.PostLoad;
-import javax.persistence.PostUpdate;
 import java.time.LocalDateTime;
+
+import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 
 /**
  * @author Ali Guliyev
@@ -19,12 +25,19 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@Service
 public class OrderLifeCycle {
 
-    RabbitOfferService rabbitOfferService;
+    static private RabbitOfferService rabbitOfferService;
+    static private JasperMessageRepo jasperMessageRepo;
+    static private LocaleMessageService messageService;
 
-    public OrderLifeCycle(RabbitOfferService rabbitOfferService) {
-        this.rabbitOfferService = rabbitOfferService;
+
+    @Autowired
+    public void init(RabbitOfferService rabbitOfferService,JasperMessageRepo jasperMessageRepo, LocaleMessageService messageService) {
+        OrderLifeCycle.rabbitOfferService=rabbitOfferService;
+        OrderLifeCycle.jasperMessageRepo = jasperMessageRepo;
+        OrderLifeCycle.messageService = messageService;
     }
 
     /**
@@ -35,8 +48,11 @@ public class OrderLifeCycle {
     private void beforeLoad(UserRequest userRequest) {
         if ((userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) || userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Accepted))
                 && userRequest.getExpiredDate().isBefore(LocalDateTime.now())) {
-            System.out.println("BB");
-            rabbitOfferService.warn(WarningDto.builder().text("Diqqet diqqetttttttttttt").userId(userRequest.getUserId()).build());
+            JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
+            String language = jsonObject.getString("lang");
+            rabbitOfferService.warn(WarningDto.builder()
+                    .text(getJasperMessage("warning.message", language, jasperMessageRepo, messageService))
+                    .userId(userRequest.getUserId()).build());
         }
         System.out.println("AA");
     }

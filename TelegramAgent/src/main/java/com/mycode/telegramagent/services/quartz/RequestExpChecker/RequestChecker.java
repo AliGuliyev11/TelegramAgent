@@ -20,6 +20,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * If request expired date equals now change agent request status to expired
+ */
+
+
 @Configuration
 public class RequestChecker extends QuartzJobBean {
 
@@ -28,6 +36,11 @@ public class RequestChecker extends QuartzJobBean {
     public RequestChecker(OrderDAO dao) {
         this.dao = dao;
     }
+
+    /**
+     * Check user request status
+     * If
+     */
 
     @SneakyThrows
     @Override

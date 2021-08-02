@@ -124,10 +124,15 @@ public class IAgentServiceImpl implements IAgentService {
         if (agent == null) {
             throw new EmailNotFound();
         }
-        String url = emailConfirmationUrl + agent.getHashCode();
-        String text = "Please,click this link to confirm your email.Then we will send you password.This is confirmation " +
-                "link click <a href=" + url + ">here</a>";
-        emailService.sendSimpleMessage(email, "Forgot password", text);
+        if (agent.getIsVerified()) {
+            String url = emailConfirmationUrl + agent.getHashCode();
+            String text = "Please,click this link to confirm your email.Then we will send you password.This is confirmation " +
+                    "link click <a href=" + url + ">here</a>";
+            emailService.sendSimpleMessage(email, "Forgot password", text);
+        }else{
+            emailService.sendSimpleMessage(email, "Forgot password", "Your email not verified.");
+        }
+
     }
 
     /**

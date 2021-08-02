@@ -3,6 +3,10 @@ package com.mycode.telegramagent.dao.Interface;
 import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.models.Agent;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
 
 public interface AgentDAO {
 

@@ -1,9 +1,5 @@
 package com.mycode.telegramagent.services.quartz.RequestExpChecker;
 
-import com.mycode.telegramagent.exceptions.OfferNotWorkingHour;
-import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
-import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
-import com.mycode.telegramagent.services.quartz.RequestExpChecker.RequestChecker;
 import lombok.SneakyThrows;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +15,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * Expired request checker component class
+ */
 
 @Component
 public class RequestCheckerConf {
@@ -60,7 +60,7 @@ public class RequestCheckerConf {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(now);
         String weekday = String.valueOf(calendar.get(Calendar.DAY_OF_WEEK) - 1);
-        if (!Arrays.stream(workingDays).anyMatch(a -> a.equals(weekday))) {
+        if (Arrays.stream(workingDays).noneMatch(a -> a.equals(weekday))) {
             return null;
         } else {
             return TriggerBuilder.newTrigger()

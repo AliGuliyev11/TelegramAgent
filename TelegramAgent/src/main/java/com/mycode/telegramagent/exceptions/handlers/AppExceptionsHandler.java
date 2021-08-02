@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 @ControllerAdvice
 public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
 

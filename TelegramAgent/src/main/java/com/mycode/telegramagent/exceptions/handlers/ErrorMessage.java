@@ -6,6 +6,11 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ */
+
 @Data
 public class ErrorMessage {
     private HttpStatus status;

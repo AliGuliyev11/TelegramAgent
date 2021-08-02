@@ -7,6 +7,13 @@ import lombok.SneakyThrows;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Class for convert offer DTO to jasper DTO
+ */
+
 public class OfferToJasper {
     @SneakyThrows
     public static JasperDto offerToJasper(OfferDto offerDto) {

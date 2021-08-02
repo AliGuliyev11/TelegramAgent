@@ -19,7 +19,22 @@ import java.util.HashMap;
 
 import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * @implNote Class for convert text to jasper report
+ */
+
 public class TextToImage {
+
+    /** This method for converting text to jasper report then convert it to image
+     * @param jasperDto jasper DTO,see OfferToJasper class
+     * @param languages user reuqest language
+     * @param messageService message service which get message from locale bundle
+     * @param location file location
+     * @param resourceFile jasper resource file location
+     * @param jasperMessageRepo message entity
+     * */
 
     @SneakyThrows
     public static void textToImage(JasperDto jasperDto, String languages, LocaleMessageService messageService,

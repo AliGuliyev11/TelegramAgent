@@ -16,6 +16,13 @@ import java.util.GregorianCalendar;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
+/**
+ * @author Ali Guliyev
+ * @version 1.0
+ * Expired request component class
+ */
+
+
 @Component
 public class RequestDeleteConf {
 

@@ -1,10 +1,7 @@
 package com.mycode.telegramagent.dao.Impl;
 
 import com.mycode.telegramagent.dao.Interface.OfferDAO;
-import com.mycode.telegramagent.dto.JasperDto;
-import com.mycode.telegramagent.dto.OfferDto;
-import com.mycode.telegramagent.dto.RabbitOffer;
-import com.mycode.telegramagent.dto.ReplyToOffer;
+import com.mycode.telegramagent.dto.*;
 import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.exceptions.NotAnyOffer;
 import com.mycode.telegramagent.models.Agent;
@@ -25,10 +22,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import static com.mycode.telegramagent.utils.ExpiredDateGenerator.getExpiredDate;
+import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 import static com.mycode.telegramagent.utils.OfferToJasper.offerToJasper;
 import static com.mycode.telegramagent.utils.TextToImage.textToImage;
 
@@ -88,10 +87,13 @@ public class OfferImpl implements OfferDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Offer saveOffer(String uuid, String email, OfferDto offerDto) {
+
+        LocalDateTime offerMadeExpiredTime = userRequest.getUserRequestLocalDatetimeByUserID(uuid);
+
         Agent agent = agentRepo.getAgentByEmail(email);
         UserRequest order = userRequest.getOrderByUserId(uuid, email);
         order.setAgentRequestStatus(AgentRequestStatus.Offer_Made);
-        order.setExpiredDate(getExpiredDate(beginTime, endTime, expiredTime, workingDays));
+        order.setExpiredDate(offerMadeExpiredTime != null ? offerMadeExpiredTime : getExpiredDate(beginTime, endTime, expiredTime, workingDays));
         JSONObject jsonObject = new JSONObject(order.getUserRequest());
         JasperDto jasperDto = offerToJasper(offerDto);
         textToImage(jasperDto, jsonObject.getString("lang"), messageService, location, resourceFile, jasperMessageRepo);
@@ -117,16 +119,31 @@ public class OfferImpl implements OfferDAO {
      * @param replyToOffer DTO which comes from user
      */
 
+
     @Override
     @Transactional
     public void offerAccepted(ReplyToOffer replyToOffer) {
         Offer offer = offerRepo.findById(replyToOffer.getOfferId()).orElseThrow(NotAnyOffer::new);
-        offer.setAcceptedDate(new Date());
-        offer.setPhoneNumber(replyToOffer.getPhoneNumber());
-        UserRequest userRequest = offer.getUserRequest();
-        userRequest.setAgentRequestStatus(AgentRequestStatus.Accepted);
-        offer.setUserRequest(userRequest);
-        offerRepo.save(offer);
+        if (offer != null) {
+            UserRequest userRequest = offer.getUserRequest();
+            if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Expired)) {
+                System.out.println("Offer id"+offer.getId());
+                System.out.println("Girir bura");
+                JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
+                String language = jsonObject.getString("lang");
+                offerService.warn(WarningDto.builder()
+                        .text(getJasperMessage("warning.repeat", language, jasperMessageRepo, messageService))
+                        .userId(userRequest.getUserId()).build());
+            } else {
+                userRequest.setAgentRequestStatus(AgentRequestStatus.Accepted);
+                offer.setAcceptedDate(new Date());
+                offer.setPhoneNumber(replyToOffer.getPhoneNumber());
+                offer.setUserRequest(userRequest);
+                offerRepo.save(offer);
+            }
+        }
+
+
     }
 
     /**
@@ -150,14 +167,18 @@ public class OfferImpl implements OfferDAO {
      */
 
     @Override
+    @Transactional
     public List<Offer> getAgentOffers(String email) {
         return offerRepo.getOffersByAgent_Email(email);
     }
 
-    /** This method for get logged in user offer
+    /**
+     * This method for get logged in user offer
+     *
      * @param email current agent email
-     * @param id offer id
-     * @return Offer*/
+     * @param id    offer id
+     * @return Offer
+     */
 
     @Override
     @Transactional
