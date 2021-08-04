@@ -42,7 +42,6 @@ public class Validation {
     @SneakyThrows
     public static void validation(OfferDto offerDto, int orderBudget) {
 
-
         if (!Pattern.matches(DATE_REGEX, offerDto.getStartDate()) || !Pattern.matches(DATE_REGEX, offerDto.getEndDate())) {
             throw new DateFormat();
         }
@@ -54,7 +53,7 @@ public class Validation {
             throw new OfferPriceZero();
         }
         if (offerDto.getPrice() > orderBudget) {
-            throw new OfferBudgetHigher();
+            throw new OfferBudgetHigher(orderBudget);
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -130,7 +129,7 @@ public class Validation {
 
 
     private static final String EMAIL_REGEX = "([a-zA-Z0-9_.+-])+\\@(([a-zA-Z0-9-])+\\.)+([a-zA-Z0-9]{2,4})";
-    private static final String PHONE_REGEX = "[+]{1}[9]{2}[4]{1}(([5]([0]|[1]|[5]))|([7]([0]|[7]))|([9]([9])))[1-9][0-9]{6}";
+    private static final String PHONE_REGEX = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}|(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}|(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
     private static final String PASSWORD_REGEX = ".{8,}";
     private static final String VOEN_REGEX = "[0-9]{10}";
 

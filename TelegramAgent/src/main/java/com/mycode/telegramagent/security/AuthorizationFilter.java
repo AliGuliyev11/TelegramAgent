@@ -64,7 +64,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 }
             } else {
                 filterChain.doFilter(request, response);
-
             }
         }
     }

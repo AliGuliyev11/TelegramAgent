@@ -6,7 +6,7 @@ package com.mycode.telegramagent.exceptions;
  */
 
 public class OfferBudgetHigher extends RuntimeException{
-    public OfferBudgetHigher() {
-        super("Offer budget too higher.");
+    public OfferBudgetHigher(int message) {
+        super("Offer budget too higher.Your maximum request must be "+message);
     }
 }

@@ -57,12 +57,12 @@ public class IAgentServiceImpl implements IAgentService {
      */
 
     @Override
-    public AgentDto signup(AgentDto agentDto) {
+    public Agent signup(AgentDto agentDto) {
         signUpValidation(agentDto);
         regexValidation(agentDto);
         checkUnique(agentDto);
         Agent agent = agentDAO.signup(agentDto);
-        return agentDto;
+        return agent;
     }
 
     /**
@@ -157,7 +157,7 @@ public class IAgentServiceImpl implements IAgentService {
     }
 
     /**
-     * This method for sneding new password to agent
+     * This method for sending new password to agent
      *
      * @param agencyName agency hash code
      */

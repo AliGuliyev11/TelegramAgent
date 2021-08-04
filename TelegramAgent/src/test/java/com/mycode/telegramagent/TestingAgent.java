@@ -14,16 +14,16 @@ import com.mycode.telegramagent.enums.AgentRequestStatus;
 import com.mycode.telegramagent.enums.RequestStatus;
 import com.mycode.telegramagent.enums.RolePriority;
 import com.mycode.telegramagent.exceptions.*;
-import com.mycode.telegramagent.models.Agent;
-import com.mycode.telegramagent.models.Offer;
-import com.mycode.telegramagent.models.Role;
-import com.mycode.telegramagent.models.UserRequest;
+import com.mycode.telegramagent.models.*;
 import com.mycode.telegramagent.repositories.AgentRepo;
+import com.mycode.telegramagent.repositories.JasperMessageRepo;
 import com.mycode.telegramagent.repositories.OfferRepo;
 import com.mycode.telegramagent.repositories.RoleRepo;
 import com.mycode.telegramagent.services.Impl.IAgentServiceImpl;
 import com.mycode.telegramagent.services.Impl.OfferServiceImpl;
 import com.mycode.telegramagent.services.Impl.OrderServiceImpl;
+import com.mycode.telegramagent.services.Locale.LocaleMessageService;
+import com.mycode.telegramagent.utils.PasswordCreator;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -33,7 +33,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
@@ -45,10 +45,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 import static com.mycode.telegramagent.utils.Validation.checkStartDate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -89,7 +90,7 @@ class TestingAgent {
     @Test
     @Order(1)
     void getAgentById() {
-        com.mycode.telegramagent.models.Agent agent = new com.mycode.telegramagent.models.Agent();
+        Agent agent = new Agent();
         agent.setEmail("remindersazerbaijan1@gmail.com");
         agent.setIsVerified(true);
         agent.setVoen("1243354645");
@@ -97,9 +98,17 @@ class TestingAgent {
         agent.setCompanyName("TestCompany");
         agent.setPhoneNumber("124435345");
         agent.setHashCode(232435364);
-        com.mycode.telegramagent.models.Agent savedAgent = agentRepo.save(agent);
+        Agent savedAgent = agentRepo.save(agent);
         Assertions.assertEquals(savedAgent.getId(), agentRepo.getAgentByEmail("remindersazerbaijan1@gmail.com").getId());
     }
+
+
+
+    @Test
+    void passwordGenerator() {
+        Assertions.assertEquals(8, PasswordCreator.passwordGenerator().length());
+    }
+
 
     @Test
     void signup() {
@@ -110,7 +119,7 @@ class TestingAgent {
         agent.setCompanyName("TestCompany");
         agent.setPhoneNumber("124435345");
         agent.setPassword("12345678");
-        com.mycode.telegramagent.models.Agent savedAgent = agentDAO.signup(agent);
+        Agent savedAgent = agentDAO.signup(agent);
         Assertions.assertEquals(savedAgent.getId(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getId());
         Assertions.assertEquals(savedAgent.getEmail(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getEmail());
         Assertions.assertEquals(savedAgent.getVoen(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getVoen());
@@ -118,6 +127,11 @@ class TestingAgent {
         Assertions.assertEquals(savedAgent.getCompanyName(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getCompanyName());
         Assertions.assertEquals(savedAgent.getPhoneNumber(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getPhoneNumber());
         Assertions.assertEquals(savedAgent.getPassword(), agentRepo.getAgentByEmail("remindersazerbaijan@gmail.com").getPassword());
+    }
+
+    @Test
+    void forgotPassAgentNull() {
+        Assertions.assertThrows(EmailNotFound.class, () -> agentService.forgotPassword("remindersazerbaijan12@gmail.com"));
     }
 
     @Test
@@ -131,7 +145,7 @@ class TestingAgent {
 
     @Test
     void getAgentByHashCode() {
-        com.mycode.telegramagent.models.Agent agent = new com.mycode.telegramagent.models.Agent();
+        Agent agent = new com.mycode.telegramagent.models.Agent();
         agent.setId(1l);
         agent.setEmail("remindersazerbaijan1@gmail.com");
         agent.setIsVerified(true);
@@ -176,7 +190,7 @@ class TestingAgent {
         agent.setVoen("1243354645");
         agent.setAgencyName("TestAgent");
         agent.setCompanyName("TestCompany2");
-        agent.setPhoneNumber("124435345");
+        agent.setPhoneNumber("+994501234567");
         Assertions.assertThrows(AgencyExist.class, () -> agentService.checkUnique(agent));
 
     }
@@ -189,7 +203,7 @@ class TestingAgent {
         agent.setVoen("1243354645");
         agent.setAgencyName("TestAgent2");
         agent.setCompanyName("TestCompany");
-        agent.setPhoneNumber("124435345");
+        agent.setPhoneNumber("+994501234567");
 
         Assertions.assertThrows(CompanyExist.class, () -> agentService.checkUnique(agent));
 
@@ -203,11 +217,92 @@ class TestingAgent {
         agent.setVoen("1243354645");
         agent.setAgencyName("TestAgent2");
         agent.setCompanyName("TestCompany2");
-        agent.setPhoneNumber("124435345");
+        agent.setPhoneNumber("+994501234567");
 
         Assertions.assertThrows(EmailAlreadyExist.class, () -> agentService.checkUnique(agent));
 
     }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("re pass not added")
+    void agentValidation() {
+        AgentDto agent = new AgentDto();
+        agent.setEmail("remindersazerbaijan34@gmail.com");
+        agent.setVoen("1243354645");
+        agent.setAgencyName("TestAgent23");
+        agent.setCompanyName("TestCompany23");
+        agent.setPhoneNumber("+994501234567");
+
+        Assertions.assertThrows(AgentValidation.class, () -> agentService.signup(agent));
+
+    }
+
+    @SneakyThrows
+    @Test
+    void voenValidation() {
+        AgentDto agent = new AgentDto();
+        agent.setEmail("remindersazerbaijan34@gmail.com");
+        agent.setVoen("12433546457");
+        agent.setAgencyName("TestAgent23");
+        agent.setPassword("12345678");
+        agent.setCompanyName("TestCompany23");
+        agent.setPhoneNumber("+994501234567");
+        agent.setRepass("12345678");
+
+        Assertions.assertThrows(VoenValidation.class, () -> agentService.signup(agent));
+
+    }
+
+    @SneakyThrows
+    @Test
+    void passwordNotMatched() {
+        AgentDto agent = new AgentDto();
+        agent.setEmail("remindersazerbaijan34@gmail.com");
+        agent.setVoen("1243354645");
+        agent.setAgencyName("TestAgent23");
+        agent.setPassword("123456789");
+        agent.setCompanyName("TestCompany23");
+        agent.setPhoneNumber("+994501234567");
+        agent.setRepass("12345678");
+
+        Assertions.assertThrows(PasswordNotMatched.class, () -> agentService.signup(agent));
+
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("Password must contain at least 8 character")
+    void passwordValidation() {
+        AgentDto agent = new AgentDto();
+        agent.setEmail("remindersazerbaijan34@gmail.com");
+        agent.setVoen("1243354645");
+        agent.setAgencyName("TestAgent23");
+        agent.setPassword("123456");
+        agent.setCompanyName("TestCompany23");
+        agent.setPhoneNumber("+994501234567");
+        agent.setRepass("123456");
+
+        Assertions.assertThrows(PasswordValidation.class, () -> agentService.signup(agent));
+
+    }
+
+    @SneakyThrows
+    @Test
+    void phoneValidation() {
+        AgentDto agent = new AgentDto();
+        agent.setEmail("remindersazerbaijan34@gmail.com");
+        agent.setVoen("1243354645");
+        agent.setAgencyName("TestAgent23");
+        agent.setPassword("12345678");
+        agent.setCompanyName("TestCompany23");
+        agent.setPhoneNumber("+9945012345678");
+        agent.setRepass("12345678");
+
+        Assertions.assertThrows(PhoneValidation.class, () -> agentService.signup(agent));
+
+    }
+
 
     @Test
     void forgotPassNullAgent() {
@@ -313,6 +408,13 @@ class TestingAgent {
 
         Offer acceptedOffer = dao.getOfferById("remindersazerbaijan1@gmail.com", 1l);
         Assertions.assertEquals(AgentRequestStatus.Accepted, acceptedOffer.getUserRequest().getAgentRequestStatus());
+    }
+
+    @SneakyThrows
+    @Test
+    @Order(9)
+    void moveFromArchiveAcceptedExceptionTest() {
+        Assertions.assertThrows(RequestAccepted.class, () -> orderService.moveFromArchive("remindersazerbaijan1@gmail.com", 1L));
     }
 
     @Test
@@ -512,6 +614,8 @@ class TestingAgent {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(mapper.writeValueAsString(orderService.getAllAcceptedRequests(agentDto.getEmail()))));
     }
+
+
     @WithMockUser(username = "ROLE_USER")
     @SneakyThrows
     @Transactional
@@ -528,7 +632,7 @@ class TestingAgent {
     @Order(21)
     void getAllOfferMadeController() {
 
-        UserRequest userRequest=orderDAO.getUserRequestByIdAndAgentEmail(1l,"remindersazerbaijan1@gmail.com");
+        UserRequest userRequest = orderDAO.getUserRequestByIdAndAgentEmail(1l, "remindersazerbaijan1@gmail.com");
         userRequest.setAgentRequestStatus(AgentRequestStatus.Offer_Made);
         orderDAO.saveUserRequest(userRequest);
 
@@ -592,6 +696,104 @@ class TestingAgent {
                 .andExpect(content().json(mapper.writeValueAsString(orderService.getAllArchive(agentDto.getEmail()))));
     }
 
+    @SneakyThrows
+    @Test
+    @Order(24)
+    void moveFromArchiveTest() {
+        Assertions.assertThrows(RequestNotFound.class, () -> orderService.moveFromArchive("a@gmail.com", 30L));
+    }
+
+    @Autowired
+    JasperMessageRepo jasperMessageRepo;
+    @Autowired
+    LocaleMessageService localeMessageService;
+
+    @Test
+    void jasperPriceTest() {
+        JasperMessage botMessage = new JasperMessage();
+        Map<String, String> message = new HashMap<>();
+        message.put("AZ", "Qiymət");
+        message.put("EN", "Price");
+        message.put("RU", "Цена");
+        Gson gson = new Gson();
+        String endingMessage = gson.toJson(message);
+        botMessage.setMessage(endingMessage);
+        botMessage.setKeyword("jasper.price");
+        jasperMessageRepo.save(botMessage);
+        String language = "AZ";
+        String keyword = "jasper.price";
+        String expected = "Qiymət";
+        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
+    }
+
+    @Test
+    void jasperNoteTest() {
+        JasperMessage botMessage = new JasperMessage();
+        Map<String, String> message = new HashMap<>();
+        message.put("AZ", "Qeyd");
+        message.put("EN", "Note");
+        message.put("RU", "Примечание");
+        Gson gson = new Gson();
+        String endingMessage = gson.toJson(message);
+        botMessage.setMessage(endingMessage);
+        botMessage.setKeyword("jasper.note");
+        jasperMessageRepo.save(botMessage);
+        String language = "AZ";
+        String keyword = "jasper.note";
+        String expected = "Qeyd";
+        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
+    }
+
+    @Test
+    void jasperDescTest() {
+        JasperMessage botMessage = new JasperMessage();
+        Map<String, String> message = new HashMap<>();
+        message.put("AZ", "Xarakteristika");
+        message.put("EN", "Description");
+        message.put("RU", "Описание");
+        Gson gson = new Gson();
+        String endingMessage = gson.toJson(message);
+        botMessage.setMessage(endingMessage);
+        botMessage.setKeyword("jasper.description");
+        jasperMessageRepo.save(botMessage);
+        String language = "EN";
+        String keyword = "jasper.description";
+        String expected = "Description";
+        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
+    }
+
+    @Test
+    @Order(1)
+    void jasperDateTest() {
+        JasperMessage botMessage = new JasperMessage();
+        Map<String, String> message = new HashMap<>();
+        message.put("RU", "Дата");
+        Gson gson = new Gson();
+        String endingMessage = gson.toJson(message);
+        botMessage.setMessage(endingMessage);
+        botMessage.setKeyword("jasper.date");
+        jasperMessageRepo.save(botMessage);
+        String language = "RU";
+        String keyword = "jasper.date";
+        String expected = "Дата";
+        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
+    }
+
+    @Test
+    void jasperDateLocaleTest() {
+        String language = "AZ";
+        String keyword = "jasper.date";
+        String expected = "Date";
+        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
+    }
+
+
+    @Test
+    void getOfferByIdException() {
+        Assertions.assertThrows(NotAnyOffer.class, () -> offerService.getOfferById(10L, "a@gmail.com"));
+    }
+
+
 //    @WithMockUser(username="ROLE_USER")
 //    @SneakyThrows
 //    @Test
@@ -605,7 +807,7 @@ class TestingAgent {
 //        order.put("Orderaddress1", "Orderaddress1");
 //        order.put("Orderaddress2", "Orderaddress2");
 //        order.put("Orderdate", "2021-07-30");
-//        order.put("Ordertravelle", "14");
+//        order.put("Ordertraveller", "14");
 //        order.put("Orderbudget", "5000");
 //        order.put("Orderdateto", "5");
 //
@@ -624,25 +826,38 @@ class TestingAgent {
 //        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+00:00'");
 //        df.setTimeZone(TimeZone.getTimeZone("GMT"));
 //        mapper.setDateFormat(df);
+//        mapper.registerModule(new JavaTimeModule());
 //
 //        ObjectMapper mapper2 = new ObjectMapper();
 //        mapper2.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 //
 //        AgentDto agentDto = AgentDto.builder().email("remindersazerbaijan1@gmail.com").build();
 //
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        Date date = new Date();
+//        String d = simpleDateFormat.format(date);
+//        System.out.println("Date:"+d);
+//
 //        OfferDto offer = OfferDto.builder()
 //                .description("Testing desc")
 //                .note("Testing note")
 //                .price(300d)
-//                .startDate("2021-07-26")
-//                .endDate("2021-07-26")
+//                .startDate(d)
+//                .endDate(d)
 //                .build();
+//
+//
 //
 //        RequestBuilder request = MockMvcRequestBuilders.post("/api/v1/offer/{userId}", "232435545")
 //                .requestAttr("user", agentDto)
 //                .accept(MediaType.APPLICATION_JSON)
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content(mapper2.writeValueAsString(offer));
+//
+//        Validation classUnderTest = spy(Validation.class);
+//
+//
+////        verify(classUnderTest);
 //        ResultActions result = mockMvc.perform(request)
 //                .andExpect(status().isOk())
 //                .andExpect(content().contentType(MediaType.APPLICATION_JSON))

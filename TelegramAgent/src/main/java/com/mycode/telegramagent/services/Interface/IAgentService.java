@@ -2,6 +2,7 @@ package com.mycode.telegramagent.services.Interface;
 
 import com.mycode.telegramagent.dto.AgentDto;
 import com.mycode.telegramagent.dto.PasswordChangeDto;
+import com.mycode.telegramagent.models.Agent;
 
 /**
  * @author Ali Guliyev
@@ -9,7 +10,7 @@ import com.mycode.telegramagent.dto.PasswordChangeDto;
  */
 
 public interface IAgentService {
-    AgentDto signup(AgentDto agentDto);
+    Agent signup(AgentDto agentDto);
 
     String verifyUser(int agencyName);
 

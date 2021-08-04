@@ -74,12 +74,14 @@ public class OfferServiceImpl implements IOfferService {
             throw new RequestInArchive();
         }
         JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
+        System.out.println("aa");
         validation(offerDto, jsonObject.getInt("Orderbudget"));
+        System.out.println("bb");
         checkStartDate(offerDto.getStartDate(), jsonObject.getString("Orderdate"), jsonObject.getLong("Orderdateto"));
         checkEndDate(offerDto.getEndDate(), jsonObject.getString("Orderdate"), jsonObject.getLong("Orderdateto"));
-
         return offerDAO.saveOffer(userId, email, offerDto);
     }
+
 
     /**
      * This method for when user accept offer change request status and add user data to offer

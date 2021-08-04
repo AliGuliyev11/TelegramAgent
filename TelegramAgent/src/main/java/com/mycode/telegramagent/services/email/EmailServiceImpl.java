@@ -1,17 +1,21 @@
 package com.mycode.telegramagent.services.email;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.thymeleaf.TemplateEngine;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ali Guliyev
@@ -20,7 +24,7 @@ import java.util.List;
  */
 
 @Service
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService {
 
     private JavaMailSender emailSender;
 
@@ -44,11 +48,13 @@ public class EmailServiceImpl implements EmailService{
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
                 helper.setText(text, true);
+
             }
         };
 
         emailSender.send(preparator);
     }
+
 
     @Override
     public void sendMultipleEmailMessage(String to, List<String> recipientList, String subject, String text) throws MessagingException {
