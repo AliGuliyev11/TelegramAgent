@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 import java.util.Properties;
 
@@ -49,5 +50,11 @@ public class MailSenderImp {
         props.put("mail.debug", "true");
 
         return mailSender;
+    }
+
+    public FreeMarkerConfigurationFactoryBean factoryBean(){
+        FreeMarkerConfigurationFactoryBean d=new FreeMarkerConfigurationFactoryBean();
+        d.setTemplateLoaderPath("classpath:/templates");
+        return d;
     }
 }

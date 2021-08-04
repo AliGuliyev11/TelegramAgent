@@ -1,5 +1,8 @@
 package com.mycode.telegramagent.services.email;
 
+import com.mycode.telegramagent.dto.MailDTO;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,6 +17,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,23 +35,31 @@ public class EmailServiceImpl implements EmailService {
     @Value("${email.username}")
     String emailUsername;
 
-    public EmailServiceImpl(JavaMailSender emailSender) {
+    Configuration templateEngine;
+
+    public EmailServiceImpl(JavaMailSender emailSender, Configuration templateEngine) {
         this.emailSender = emailSender;
+        this.templateEngine = templateEngine;
     }
 
     @Override
-    public void sendSimpleMessage(String to, String subject, String text) {
+    public void sendSimpleMessage(MailDTO mail) {
         SimpleMailMessage message = new SimpleMailMessage();
 
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             public void prepare(MimeMessage mimeMessage) throws Exception {
-                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(mail.getTo()));
                 mimeMessage.setFrom(new InternetAddress(emailUsername));
-                mimeMessage.setSubject(subject);
+                mimeMessage.setSubject(mail.getSubject());
 
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-                helper.setText(text, true);
+
+                Template template=templateEngine.getTemplate(mail.getTemplateName());
+                String html=FreeMarkerTemplateUtils.processTemplateIntoString(template,mail);
+
+
+                helper.setText(html, true);
 
             }
         };

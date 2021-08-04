@@ -1,6 +1,8 @@
 package com.mycode.telegramagent.services.LifeCycle;
 
+import com.mycode.telegramagent.dto.MailDTO;
 import com.mycode.telegramagent.models.Agent;
+import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import com.mycode.telegramagent.services.email.EmailServiceImpl;
 import lombok.Data;
 import lombok.Getter;
@@ -26,9 +28,11 @@ import javax.persistence.PostUpdate;
 @NoArgsConstructor
 public class AgentLifeCycle {
     EmailServiceImpl emailService;
+    LocaleMessageService messageService;
 
-    public AgentLifeCycle(EmailServiceImpl emailService) {
+    public AgentLifeCycle(EmailServiceImpl emailService, LocaleMessageService messageService) {
         this.emailService = emailService;
+        this.messageService = messageService;
     }
 
     @Value("${agent.email.confirmation.limit}")
@@ -37,14 +41,20 @@ public class AgentLifeCycle {
     @Value("${email.verify.agent.url}")
     String emailUrl;
 
-    /** After agent creation agent enters this method */
+    @Value("${confirmation.template}")
+    String confirmationTemp;
+
+    /**
+     * After agent creation agent enters this method
+     */
 
     @PostPersist
     private void afterPost(Agent agent) {
         String url = emailUrl + agent.getHashCode();
-        String text = "Hi," + agent.getAgencyName() + ".This is confirmation link click <a href=" + url + ">here</a>."
-                + "This link expired "+limitConfirmationEmail+" minutes after";
-        emailService.sendSimpleMessage(agent.getEmail(), "Verification email",
-                text);
+        String text = messageService.getMessage("agent.lifecycle.email.text", limitConfirmationEmail);
+        MailDTO mail = MailDTO.builder().to(agent.getEmail()).subject(messageService.getMessage("agent.confirmation.subject"))
+                .buttonName(messageService.getMessage("agent.confirmation.button.text")).text(text).templateName(confirmationTemp).link(url).build();
+
+        emailService.sendSimpleMessage(mail);
     }
 }

@@ -3,6 +3,7 @@ package com.mycode.telegramagent.services.Impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dto.AgentDto;
+import com.mycode.telegramagent.dto.MailDTO;
 import com.mycode.telegramagent.dto.PasswordChangeDto;
 import com.mycode.telegramagent.enums.RolePriority;
 import com.mycode.telegramagent.exceptions.*;
@@ -10,6 +11,7 @@ import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.models.Role;
 import com.mycode.telegramagent.repositories.RoleRepo;
 import com.mycode.telegramagent.services.Interface.IAgentService;
+import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import com.mycode.telegramagent.services.email.EmailServiceImpl;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,16 +39,18 @@ public class IAgentServiceImpl implements IAgentService {
     ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
+    LocaleMessageService messageService;
 
 
     public IAgentServiceImpl(Environment environment, AgentDAO agentDAO, EmailServiceImpl emailService, ObjectMapper objectMapper,
-                             PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
+                             PasswordEncoder passwordEncoder, RoleRepo roleRepo, LocaleMessageService messageService) {
         this.environment = environment;
         this.agentDAO = agentDAO;
         this.emailService = emailService;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
+        this.messageService = messageService;
     }
 
     /**
@@ -109,6 +113,10 @@ public class IAgentServiceImpl implements IAgentService {
 
     @Value("${email.confirmation.url}")
     String emailConfirmationUrl;
+    @Value("${forgotpass.template}")
+    String forgotPassTemp;
+    @Value("${confirmation.template}")
+    String confirmationTemp;
 
     /**
      * This method for forgot password email sending
@@ -126,11 +134,15 @@ public class IAgentServiceImpl implements IAgentService {
         }
         if (agent.getIsVerified()) {
             String url = emailConfirmationUrl + agent.getHashCode();
-            String text = "Please,click this link to confirm your email.Then we will send you password.This is confirmation " +
-                    "link click <a href=" + url + ">here</a>";
-            emailService.sendSimpleMessage(email, "Forgot password", text);
-        }else{
-            emailService.sendSimpleMessage(email, "Forgot password", "Your email not verified.");
+            String text = messageService.getMessage("agent.forgot.password.verified.text");
+            MailDTO mail = MailDTO.builder().to(email).subject(messageService.getMessage("agent.forgot.password.subject"))
+                    .buttonName(messageService.getMessage("agent.forgot.password.verified.button.text")).text(text).templateName(confirmationTemp).link(url).build();
+
+            emailService.sendSimpleMessage(mail);
+        } else {
+            MailDTO mail = MailDTO.builder().to(email).subject(messageService.getMessage("agent.forgot.password.subject"))
+                    .text(messageService.getMessage("agent.forgot.password.not-verified.text")).templateName(forgotPassTemp).build();
+            emailService.sendSimpleMessage(mail);
         }
 
     }
@@ -156,6 +168,9 @@ public class IAgentServiceImpl implements IAgentService {
         return true;
     }
 
+    @Value("${passwordsender.template}")
+    String passwordTemp;
+
     /**
      * This method for sending new password to agent
      *
@@ -167,14 +182,18 @@ public class IAgentServiceImpl implements IAgentService {
     public void sendPassword(int agencyName) {
 
         String password = passwordGenerator();
-        String text = "This is your new password:" + password;
         Agent agent = agentDAO.getAgentByHashCode(agencyName);
         updateUserPassword(agent.getEmail(), password);
-        emailService.sendSimpleMessage(agent.getEmail(), "Your new password", text);
+        MailDTO mail = MailDTO.builder().to(agent.getEmail()).subject(messageService.getMessage("agent.send.password.subject"))
+                .text(password).templateName(passwordTemp).build();
+        emailService.sendSimpleMessage(mail);
     }
 
     @Value("${agent.email.confirmation.limit}")
     long limitConfirmationEmail;
+
+    @Value("${email.verify.agent.url}")
+    String emailUrl;
 
     /**
      * This method for verify agent
@@ -196,10 +215,13 @@ public class IAgentServiceImpl implements IAgentService {
             agentDAO.save(agent);
             return "confirmed successfully";
         } else {
-            if (agent != null) {
-                agentDAO.removeAgent(agent);
-            }
-            return "email expired";
+            String url = emailUrl + agent.getHashCode();
+            String text = messageService.getMessage("agent.lifecycle.email.text", limitConfirmationEmail);
+            MailDTO mail = MailDTO.builder().to(agent.getEmail()).subject(messageService.getMessage("agent.confirmation.subject"))
+                    .buttonName(messageService.getMessage("agent.confirmation.button.text")).text(text).templateName(confirmationTemp).link(url).build();
+
+            emailService.sendSimpleMessage(mail);
+            return "email expired we send you another email";
         }
 
     }
