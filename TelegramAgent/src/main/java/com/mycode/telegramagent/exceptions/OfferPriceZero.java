@@ -8,6 +8,6 @@ package com.mycode.telegramagent.exceptions;
 
 public class OfferPriceZero extends RuntimeException{
     public OfferPriceZero() {
-        super("Offer price mustn't be zero or minus value");
+        super("Offer price mustn't be zero or negative value");
     }
 }

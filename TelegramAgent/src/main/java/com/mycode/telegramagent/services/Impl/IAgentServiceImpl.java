@@ -130,7 +130,7 @@ public class IAgentServiceImpl implements IAgentService {
 
         Agent agent = agentDAO.getAgentByEmail(email);
         if (agent == null) {
-            throw new EmailNotFound();
+            throw new AgentNotFound();
         }
         if (agent.getIsVerified()) {
             String url = emailConfirmationUrl + agent.getHashCode();
@@ -219,7 +219,8 @@ public class IAgentServiceImpl implements IAgentService {
             String text = messageService.getMessage("agent.lifecycle.email.text", limitConfirmationEmail);
             MailDTO mail = MailDTO.builder().to(agent.getEmail()).subject(messageService.getMessage("agent.confirmation.subject"))
                     .buttonName(messageService.getMessage("agent.confirmation.button.text")).text(text).templateName(confirmationTemp).link(url).build();
-
+            agent.setCreatedDate(LocalDateTime.now());
+            agentDAO.save(agent);
             emailService.sendSimpleMessage(mail);
             return "email expired we send you another email";
         }

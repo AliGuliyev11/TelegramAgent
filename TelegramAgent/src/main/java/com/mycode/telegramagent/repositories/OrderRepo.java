@@ -49,7 +49,8 @@ public interface OrderRepo extends JpaRepository<UserRequest, Long> {
 
     @Modifying
     @Query(value = "update user_request u SET request_status='De_Active',agent_request_status='Expired' " +
-            "where CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR), 'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:strDate as TIMESTAMP)", nativeQuery = true)
+            "where (CAST(TO_TIMESTAMP(CAST(u.expired_date as VARCHAR), 'YYYY-MM-DD hh24:MI') as TIMESTAMP)=CAST(:strDate as TIMESTAMP)" +
+            "OR CAST(u.expired_date as DATE)<cast(:strDate as date))", nativeQuery = true)
     void checkAndExpireRequest(String strDate);
 
     @Query(value = "SELECT DISTINCT ON (user_id) *  from user_request u where " +

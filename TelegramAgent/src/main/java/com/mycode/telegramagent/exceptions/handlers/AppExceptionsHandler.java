@@ -179,7 +179,7 @@ public class AppExceptionsHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleOfferPriceZeroException(OfferPriceZero ex, WebRequest request) {
 
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT,
-                ex.getLocalizedMessage(), "Price mustn't be zero or minus value.");
+                ex.getLocalizedMessage(), "Price mustn't be zero or negative value.");
         return new ResponseEntity<>(
                 errorMessage, new HttpHeaders(), errorMessage.getStatus());
 
