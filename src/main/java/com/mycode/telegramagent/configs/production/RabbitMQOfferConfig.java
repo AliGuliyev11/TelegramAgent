@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
  */
 
 @Profile("!dev")
-@Configuration(value = "offerConfig")
+@Configuration
 public class RabbitMQOfferConfig {
 
 

@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
  */
 
 @Profile("dev")
-@Configuration(value = "offerConfig")
+@Configuration
 public class RabbitMQOfferConfig {
 
 
