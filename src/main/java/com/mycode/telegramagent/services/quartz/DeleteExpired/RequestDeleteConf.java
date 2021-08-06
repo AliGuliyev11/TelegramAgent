@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -40,7 +41,7 @@ public class RequestDeleteConf {
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)
                 .withIdentity("deleteExpiredChecker", "deleteExpiredTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 1 3 1/1 * ? *"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 1 3 1/1 * ? *").inTimeZone(TimeZone.getTimeZone("GMT")))
                 .build();
 
     }

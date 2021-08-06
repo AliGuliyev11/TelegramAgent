@@ -10,10 +10,8 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * @author Ali Guliyev
@@ -68,7 +66,7 @@ public class RequestCheckerConf {
                     .withIdentity("requestChecker", "requestCheckerTrigger")
                     .endAt(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()))
                     .startAt(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()))
-                    .withSchedule(CronScheduleBuilder.cronSchedule("59 * * ? * * *")
+                    .withSchedule(CronScheduleBuilder.cronSchedule("59 * * ? * * *").inTimeZone(TimeZone.getTimeZone("GMT"))
                     ).build();
         }
     }
