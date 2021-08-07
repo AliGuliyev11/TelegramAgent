@@ -13,6 +13,7 @@ import com.mycode.telegramagent.repositories.OfferRepo;
 import com.mycode.telegramagent.repositories.OrderRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -103,7 +105,7 @@ public class OfferImpl implements OfferDAO {
         offer.setAgent(agent);
         offer.setUserRequest(order);
         Offer savedOffer = offerRepo.save(offer);
-        RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(photo).build();
+        RabbitOffer rabbitOffer = RabbitOffer.builder().userId(uuid).offerId(savedOffer.getId()).file(FileUtils.readFileToByteArray(photo)).build();
         offerService.send(rabbitOffer);
         order.setOffer(savedOffer);
         userRequest.save(order);

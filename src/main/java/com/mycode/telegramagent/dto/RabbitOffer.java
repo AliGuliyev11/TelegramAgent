@@ -1,12 +1,14 @@
 package com.mycode.telegramagent.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.File;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 
 /**
@@ -24,14 +26,14 @@ import java.time.LocalDateTime;
 public class RabbitOffer implements Serializable {
     Long offerId;
     String userId;
-    File file;
+    byte[] file;
 
     @Override
     public String toString() {
         return "RabbitOffer{" +
                 "offerId=" + offerId +
                 ", userId='" + userId + '\'' +
-                ", file=" + file +
+                ", file=" + Arrays.toString(file) +
                 '}';
     }
 }
