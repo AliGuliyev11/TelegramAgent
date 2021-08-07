@@ -81,35 +81,6 @@ public class OfferServiceImpl implements IOfferService {
         return offerDAO.saveOffer(userId, email, offerDto);
     }
 
-    @SneakyThrows
-    public void checkOfferMadaInWorkingHours(String beginTime, String endTime, String[] workingDays) {
-        Date now = new Date();
-        Calendar calendarNow = GregorianCalendar.getInstance();
-        calendarNow.setTime(now);
-        String weekday = String.valueOf(calendarNow.get(Calendar.DAY_OF_WEEK) - 1);
-        if (Arrays.stream(workingDays).noneMatch(a -> a.equals(weekday))) {
-            throw new OfferNotWorkingHour();
-        }
-
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date start = format.parse(beginTime);
-        Date end = format.parse(endTime);
-
-        Calendar calendarStart = GregorianCalendar.getInstance();
-        calendarStart.setTime(start);
-        Calendar calendarEnd = GregorianCalendar.getInstance();
-        calendarEnd.setTime(end);
-
-        int hour = calendarNow.get(Calendar.HOUR_OF_DAY);
-        int minute = calendarNow.get(Calendar.MINUTE);
-        int diff = (24 - hour) * 60 - minute;
-
-        if (diff < (24 - calendarEnd.get(Calendar.HOUR_OF_DAY)) * 60 - calendarEnd.get(Calendar.MINUTE) ||
-                diff > (24 - calendarStart.get(Calendar.HOUR_OF_DAY)) * 60 - calendarStart.get(Calendar.MINUTE)) {
-            throw new OfferNotWorkingHour();
-        }
-    }
-
 
     /**
      * This method for when user accept offer change request status and add user data to offer
