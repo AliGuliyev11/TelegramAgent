@@ -43,9 +43,7 @@ public class TextToImage {
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         HashMap<String, Object> parameter = new HashMap<String, Object>();
         parameter.put("money", getJasperMessage("jasper.price", languages, agentMessageRepo, messageService));
-        parameter.put("moneyIcon", "\uD83D\uDCB5");
         parameter.put("date", getJasperMessage("jasper.date", languages, agentMessageRepo, messageService));
-        parameter.put("dateIcon", "\uD83D\uDCC5");
         parameter.put("description", getJasperMessage("jasper.description", languages, agentMessageRepo, messageService));
         if (jasperDto.getNote() != null) {
             parameter.put("note",getJasperMessage("jasper.note", languages, agentMessageRepo, messageService));
