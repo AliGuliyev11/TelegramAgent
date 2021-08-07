@@ -131,7 +131,7 @@ class TestingAgent {
 
     @Test
     void forgotPassAgentNull() {
-        Assertions.assertThrows(EmailNotFound.class, () -> agentService.forgotPassword("remindersazerbaijan12@gmail.com"));
+        Assertions.assertThrows(AgentNotFound.class, () -> agentService.forgotPassword("remindersazerbaijan12@gmail.com"));
     }
 
     @Test
@@ -296,7 +296,7 @@ class TestingAgent {
         agent.setAgencyName("TestAgent23");
         agent.setPassword("12345678");
         agent.setCompanyName("TestCompany23");
-        agent.setPhoneNumber("+9945012345678");
+        agent.setPhoneNumber("+9945012345678465");
         agent.setRepass("12345678");
 
         Assertions.assertThrows(PhoneValidation.class, () -> agentService.signup(agent));
@@ -309,7 +309,7 @@ class TestingAgent {
 
         String email = "remindergrtsazerbaijan@gmail.com";
 
-        Assertions.assertThrows(EmailNotFound.class, () -> agentService.forgotPassword(email));
+        Assertions.assertThrows(AgentNotFound.class, () -> agentService.forgotPassword(email));
     }
 
 
@@ -703,95 +703,7 @@ class TestingAgent {
         Assertions.assertThrows(RequestNotFound.class, () -> orderService.moveFromArchive("a@gmail.com", 30L));
     }
 
-    @Autowired
-    JasperMessageRepo jasperMessageRepo;
-    @Autowired
-    LocaleMessageService localeMessageService;
 
-    @Test
-    void jasperPriceTest() {
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Qiymət");
-        message.put("EN", "Price");
-        message.put("RU", "Цена");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.price");
-        jasperMessageRepo.save(botMessage);
-        String language = "AZ";
-        String keyword = "jasper.price";
-        String expected = "Qiymət";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
-    }
-
-    @Test
-    void jasperNoteTest() {
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Qeyd");
-        message.put("EN", "Note");
-        message.put("RU", "Примечание");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.note");
-        jasperMessageRepo.save(botMessage);
-        String language = "AZ";
-        String keyword = "jasper.note";
-        String expected = "Qeyd";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
-    }
-
-    @Test
-    void jasperDescTest() {
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Xarakteristika");
-        message.put("EN", "Description");
-        message.put("RU", "Описание");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.description");
-        jasperMessageRepo.save(botMessage);
-        String language = "EN";
-        String keyword = "jasper.description";
-        String expected = "Description";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
-    }
-
-    @Test
-    @Order(1)
-    void jasperDateTest() {
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("RU", "Дата");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.date");
-        jasperMessageRepo.save(botMessage);
-        String language = "RU";
-        String keyword = "jasper.date";
-        String expected = "Дата";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
-    }
-
-    @Test
-    void jasperDateLocaleTest() {
-        String language = "AZ";
-        String keyword = "jasper.date";
-        String expected = "Date";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language, jasperMessageRepo, localeMessageService));
-    }
-
-
-    @Test
-    void getOfferByIdException() {
-        Assertions.assertThrows(NotAnyOffer.class, () -> offerService.getOfferById(10L, "a@gmail.com"));
-    }
 
 
 //    @WithMockUser(username="ROLE_USER")
