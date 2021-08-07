@@ -1,6 +1,6 @@
 package com.mycode.telegramagent.repositories;
 
-import com.mycode.telegramagent.models.JasperMessage;
+import com.mycode.telegramagent.models.AgentMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @implNote Repository of jasper message
  */
 
-public interface JasperMessageRepo extends JpaRepository<JasperMessage, Long> {
-    JasperMessage getJasperMessageByKeyword(String keyword);
+public interface AgentMessageRepo extends JpaRepository<AgentMessage, Long> {
+    AgentMessage getJasperMessageByKeyword(String keyword);
 }

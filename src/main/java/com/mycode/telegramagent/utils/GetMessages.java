@@ -1,7 +1,7 @@
 package com.mycode.telegramagent.utils;
 
-import com.mycode.telegramagent.models.JasperMessage;
-import com.mycode.telegramagent.repositories.JasperMessageRepo;
+import com.mycode.telegramagent.models.AgentMessage;
+import com.mycode.telegramagent.repositories.AgentMessageRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import org.json.JSONObject;
 
@@ -22,8 +22,8 @@ public class GetMessages {
      * @param messageService message service which get message from locale bundle
      * @return String*/
 
-    public static String getJasperMessage(String keyword, String language, JasperMessageRepo messageRepo, LocaleMessageService messageService) {
-        JasperMessage message = messageRepo.getJasperMessageByKeyword(keyword);
+    public static String getJasperMessage(String keyword, String language, AgentMessageRepo messageRepo, LocaleMessageService messageService) {
+        AgentMessage message = messageRepo.getJasperMessageByKeyword(keyword);
         if (message == null) {
             return null;
         } else {

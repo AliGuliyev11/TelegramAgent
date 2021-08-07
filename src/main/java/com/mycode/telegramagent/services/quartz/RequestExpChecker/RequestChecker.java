@@ -4,9 +4,7 @@ import com.mycode.telegramagent.dao.Interface.OrderDAO;
 import com.mycode.telegramagent.dto.WarningDto;
 import com.mycode.telegramagent.models.UserRequest;
 import com.mycode.telegramagent.rabbitmq.offerOrder.publisher.RabbitOfferService;
-import com.mycode.telegramagent.repositories.JasperMessageRepo;
-import com.mycode.telegramagent.repositories.OrderRepo;
-import com.mycode.telegramagent.services.LifeCycle.OrderLifeCycle;
+import com.mycode.telegramagent.repositories.AgentMessageRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
@@ -14,17 +12,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static com.mycode.telegramagent.dto.WarningDto.*;
 import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 
 
@@ -40,14 +33,14 @@ public class RequestChecker extends QuartzJobBean {
 
     OrderDAO dao;
     RabbitOfferService rabbitOfferService;
-    JasperMessageRepo jasperMessageRepo;
+    AgentMessageRepo agentMessageRepo;
     LocaleMessageService localeMessageService;
 
     public RequestChecker(OrderDAO dao, RabbitOfferService rabbitOfferService,
-                          JasperMessageRepo jasperMessageRepo, LocaleMessageService localeMessageService) {
+                          AgentMessageRepo agentMessageRepo, LocaleMessageService localeMessageService) {
         this.dao = dao;
         this.rabbitOfferService = rabbitOfferService;
-        this.jasperMessageRepo = jasperMessageRepo;
+        this.agentMessageRepo = agentMessageRepo;
         this.localeMessageService = localeMessageService;
     }
 
@@ -70,7 +63,7 @@ public class RequestChecker extends QuartzJobBean {
                 JSONObject jsonObject = new JSONObject(item.getUserRequest());
                 String language = jsonObject.getString("lang");
                 rabbitOfferService.warn(WarningDto.builder()
-                        .text(getJasperMessage("warning.message", language, jasperMessageRepo, localeMessageService))
+                        .text(getJasperMessage("warning.message", language, agentMessageRepo, localeMessageService))
                         .userId(item.getUserId()).build());
             }
         }

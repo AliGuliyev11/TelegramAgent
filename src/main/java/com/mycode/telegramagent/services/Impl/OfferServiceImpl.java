@@ -15,7 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static com.mycode.telegramagent.utils.Validation.*;
 
@@ -62,7 +63,7 @@ public class OfferServiceImpl implements IOfferService {
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
 
-        checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
+//        checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
         if (userRequest == null) {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||
@@ -74,12 +75,39 @@ public class OfferServiceImpl implements IOfferService {
             throw new RequestInArchive();
         }
         JSONObject jsonObject = new JSONObject(userRequest.getUserRequest());
-        System.out.println("aa");
         validation(offerDto, jsonObject.getInt("Orderbudget"));
-        System.out.println("bb");
         checkStartDate(offerDto.getStartDate(), jsonObject.getString("Orderdate"), jsonObject.getLong("Orderdateto"));
         checkEndDate(offerDto.getEndDate(), jsonObject.getString("Orderdate"), jsonObject.getLong("Orderdateto"));
         return offerDAO.saveOffer(userId, email, offerDto);
+    }
+
+    @SneakyThrows
+    public void checkOfferMadaInWorkingHours(String beginTime, String endTime, String[] workingDays) {
+        Date now = new Date();
+        Calendar calendarNow = GregorianCalendar.getInstance();
+        calendarNow.setTime(now);
+        String weekday = String.valueOf(calendarNow.get(Calendar.DAY_OF_WEEK) - 1);
+        if (Arrays.stream(workingDays).noneMatch(a -> a.equals(weekday))) {
+            throw new OfferNotWorkingHour();
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        Date start = format.parse(beginTime);
+        Date end = format.parse(endTime);
+
+        Calendar calendarStart = GregorianCalendar.getInstance();
+        calendarStart.setTime(start);
+        Calendar calendarEnd = GregorianCalendar.getInstance();
+        calendarEnd.setTime(end);
+
+        int hour = calendarNow.get(Calendar.HOUR_OF_DAY);
+        int minute = calendarNow.get(Calendar.MINUTE);
+        int diff = (24 - hour) * 60 - minute;
+
+        if (diff < (24 - calendarEnd.get(Calendar.HOUR_OF_DAY)) * 60 - calendarEnd.get(Calendar.MINUTE) ||
+                diff > (24 - calendarStart.get(Calendar.HOUR_OF_DAY)) * 60 - calendarStart.get(Calendar.MINUTE)) {
+            throw new OfferNotWorkingHour();
+        }
     }
 
 

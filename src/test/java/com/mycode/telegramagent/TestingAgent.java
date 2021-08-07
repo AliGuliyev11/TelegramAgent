@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
+import com.mycode.telegramagent.dao.Impl.OfferImpl;
 import com.mycode.telegramagent.dao.Interface.AgentDAO;
 import com.mycode.telegramagent.dao.Interface.OfferDAO;
 import com.mycode.telegramagent.dao.Interface.OrderDAO;
@@ -16,14 +17,13 @@ import com.mycode.telegramagent.enums.RolePriority;
 import com.mycode.telegramagent.exceptions.*;
 import com.mycode.telegramagent.models.*;
 import com.mycode.telegramagent.repositories.AgentRepo;
-import com.mycode.telegramagent.repositories.JasperMessageRepo;
 import com.mycode.telegramagent.repositories.OfferRepo;
 import com.mycode.telegramagent.repositories.RoleRepo;
 import com.mycode.telegramagent.services.Impl.IAgentServiceImpl;
 import com.mycode.telegramagent.services.Impl.OfferServiceImpl;
 import com.mycode.telegramagent.services.Impl.OrderServiceImpl;
-import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import com.mycode.telegramagent.utils.PasswordCreator;
+import com.mycode.telegramagent.utils.Validation;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -38,6 +39,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -45,8 +47,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
 import static com.mycode.telegramagent.utils.Validation.checkStartDate;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -101,7 +105,6 @@ class TestingAgent {
         Agent savedAgent = agentRepo.save(agent);
         Assertions.assertEquals(savedAgent.getId(), agentRepo.getAgentByEmail("remindersazerbaijan1@gmail.com").getId());
     }
-
 
 
     @Test
@@ -704,76 +707,72 @@ class TestingAgent {
     }
 
 
+    @WithMockUser(username = "ROLE_USER")
+    @SneakyThrows
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void sendOffer() {
+
+        UserRequest userRequest = new UserRequest();
+        Map<String, String> order = new HashMap<>();
+        order.put("lang", "AZ");
+        order.put("OrderTravel", "OrderTravel");
+        order.put("Orderaddress1", "Orderaddress1");
+        order.put("Orderaddress2", "Orderaddress2");
+        order.put("Orderdate", "2021-07-30");
+        order.put("Ordertraveller", "14");
+        order.put("Orderbudget", "5000");
+        order.put("Orderdateto", "5");
+
+        Gson gson = new Gson();
+        userRequest.setUserRequest(gson.toJson(order));
+
+        userRequest.setRequestStatus(RequestStatus.Active);
+        userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
+        userRequest.setUserId("232435545");
+        Agent agent = agentRepo.getAgentByEmail("remindersazerbaijan1@gmail.com");
+        userRequest.setAgent(agent);
+        orderDAO.saveUserRequest(userRequest);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+00:00'");
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        mapper.setDateFormat(df);
+        mapper.registerModule(new JavaTimeModule());
+
+        ObjectMapper mapper2 = new ObjectMapper();
+        mapper2.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        AgentDto agentDto = AgentDto.builder().email("remindersazerbaijan1@gmail.com").build();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String d = simpleDateFormat.format(date);
+
+        OfferDto offer = OfferDto.builder()
+                .description("Testing desc")
+                .note("Testing note")
+                .price(300d)
+                .startDate(d)
+                .endDate(d)
+                .build();
 
 
-//    @WithMockUser(username="ROLE_USER")
-//    @SneakyThrows
-//    @Test
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    void sendOffer() {
-//
-//        UserRequest userRequest = new UserRequest();
-//        Map<String, String> order = new HashMap<>();
-//        order.put("lang", "AZ");
-//        order.put("OrderTravel", "OrderTravel");
-//        order.put("Orderaddress1", "Orderaddress1");
-//        order.put("Orderaddress2", "Orderaddress2");
-//        order.put("Orderdate", "2021-07-30");
-//        order.put("Ordertraveller", "14");
-//        order.put("Orderbudget", "5000");
-//        order.put("Orderdateto", "5");
-//
-//        Gson gson = new Gson();
-//        userRequest.setUserRequest(gson.toJson(order));
-//
-//        userRequest.setRequestStatus(RequestStatus.Active);
-//        userRequest.setAgentRequestStatus(AgentRequestStatus.New_Request);
-//        userRequest.setUserId("232435545");
-//        Agent agent = agentRepo.getAgentByEmail("remindersazerbaijan1@gmail.com");
-//        userRequest.setAgent(agent);
-//        orderDAO.saveUserRequest(userRequest);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'+00:00'");
-//        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-//        mapper.setDateFormat(df);
-//        mapper.registerModule(new JavaTimeModule());
-//
-//        ObjectMapper mapper2 = new ObjectMapper();
-//        mapper2.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//
-//        AgentDto agentDto = AgentDto.builder().email("remindersazerbaijan1@gmail.com").build();
-//
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//        Date date = new Date();
-//        String d = simpleDateFormat.format(date);
-//        System.out.println("Date:"+d);
-//
-//        OfferDto offer = OfferDto.builder()
-//                .description("Testing desc")
-//                .note("Testing note")
-//                .price(300d)
-//                .startDate(d)
-//                .endDate(d)
-//                .build();
-//
-//
-//
-//        RequestBuilder request = MockMvcRequestBuilders.post("/api/v1/offer/{userId}", "232435545")
-//                .requestAttr("user", agentDto)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(mapper2.writeValueAsString(offer));
-//
-//        Validation classUnderTest = spy(Validation.class);
-//
-//
-////        verify(classUnderTest);
-//        ResultActions result = mockMvc.perform(request)
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(content().json(mapper.writeValueAsString(dao.getOfferById("remindersazerbaijan1@gmail.com", 2l))));
-//    }
+        RequestBuilder request = MockMvcRequestBuilders.post("/api/v1/offer/{userId}", "232435545")
+                .requestAttr("user", agentDto)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper2.writeValueAsString(offer));
+
+        OfferDAO offerDAO = null;
+        OfferServiceImpl offerService = new OfferServiceImpl(null);
+        OfferServiceImpl offerService1 = spy(offerService);
+        doNothing().when(offerService1).checkOfferMadaInWorkingHours(any(), any(), any());
+        ResultActions result = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(dao.getOfferById("remindersazerbaijan1@gmail.com", 2l))));
+    }
 
 }

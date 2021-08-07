@@ -1,106 +1,101 @@
 package com.mycode.telegramagent;
 
-import com.google.gson.Gson;
-import com.mycode.telegramagent.models.JasperMessage;
-import com.mycode.telegramagent.repositories.JasperMessageRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
-import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.mycode.telegramagent.utils.GetMessages.getJasperMessage;
-
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 public class LocaleTest {
 
     @Autowired
-    JasperMessageRepo jasperMessageRepo;
-    @Autowired
     LocaleMessageService localeMessageService;
 
     @Test
-    void jasperPriceTest(){
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Qiymət");
-        message.put("EN", "Price");
-        message.put("RU", "Цена");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.price");
-        jasperMessageRepo.save(botMessage);
-        String language = "AZ";
-        String keyword = "jasper.price";
-        String expected = "Qiymət";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language,jasperMessageRepo,localeMessageService));
+    void getJasperPriceTest() {
+        String expected = "Price";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("jasper.price"));
     }
 
     @Test
-    void jasperNoteTest(){
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Qeyd");
-        message.put("EN", "Note");
-        message.put("RU", "Примечание");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.note");
-        jasperMessageRepo.save(botMessage);
-        String language = "AZ";
-        String keyword = "jasper.note";
-        String expected = "Qeyd";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language,jasperMessageRepo,localeMessageService));
-    }
-
-    @Test
-    void jasperDescTest(){
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("AZ", "Xarakteristika");
-        message.put("EN", "Description");
-        message.put("RU", "Описание");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.description");
-        jasperMessageRepo.save(botMessage);
-        String language = "EN";
-        String keyword = "jasper.description";
-        String expected = "Description";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language,jasperMessageRepo,localeMessageService));
-    }
-
-    @Test
-    @Order(1)
-    void jasperDateTest(){
-        JasperMessage botMessage = new JasperMessage();
-        Map<String, String> message = new HashMap<>();
-        message.put("RU", "Дата");
-        Gson gson = new Gson();
-        String endingMessage = gson.toJson(message);
-        botMessage.setMessage(endingMessage);
-        botMessage.setKeyword("jasper.date");
-        jasperMessageRepo.save(botMessage);
-        String language = "RU";
-        String keyword = "jasper.date";
-        String expected = "Дата";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language,jasperMessageRepo,localeMessageService));
-    }
-
-    @Test
-    void jasperDateLocaleTest(){
-        String language = "AZ";
-        String keyword = "jasper.date";
+    void getJasperDateTest() {
         String expected = "Date";
-        Assertions.assertEquals(expected, getJasperMessage(keyword, language,jasperMessageRepo,localeMessageService));
+        Assertions.assertEquals(expected, localeMessageService.getMessage("jasper.date"));
+    }
+
+    @Test
+    void getJasperDescriptionTest() {
+        String expected = "Description";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("jasper.description"));
+    }
+
+    @Test
+    void getJasperNoteTest() {
+        String expected = "Note";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("jasper.note"));
+    }
+
+    @Test
+    void getWarningMessageTest() {
+        String expected = "The offer has expired. The offer will no longer come.";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("warning.message"));
+    }
+
+    @Test
+    void getWarningRepeatTest() {
+        String expected = "Offer has expired. Your request has not been registered.";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("warning.repeat"));
+    }
+
+    @Test
+    void getAgentEmailTextSignUpTest() {
+        String expected = "We are really excited for you to join our community! You are just one click away from activate your account.This link expired 30 minutes after";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.lifecycle.email.text", 30));
+    }
+
+    @Test
+    void getConfirmButtonTextTest() {
+        String expected = "Activate Account!";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.confirmation.button.text"));
+    }
+
+    @Test
+    void getConfirmSubjectTest() {
+        String expected = "Verification email";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.confirmation.subject"));
+    }
+
+    @Test
+    void getSendPasswordSubjectTest() {
+        String expected = "Your new password";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.send.password.subject"));
+    }
+
+    @Test
+    void getForgotPasswordSubjectTest() {
+        String expected = "Forgot password";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.forgot.password.subject"));
+    }
+
+    @Test
+    void geForgotPassButtonTextTest() {
+        String expected = "Send Password";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.forgot.password.verified.button.text"));
+    }
+
+    @Test
+    void getForgotPassNotVerifiedTextTest() {
+        String expected = "Your email not verified.";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.forgot.password.not-verified.text"));
+    }
+
+    @Test
+    void getForgotPassVerifiedTextTest() {
+        String expected = "Please,click this link to confirm your email.Then we will send you password.";
+        Assertions.assertEquals(expected, localeMessageService.getMessage("agent.forgot.password.verified.text"));
     }
 
 

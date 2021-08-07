@@ -1,7 +1,7 @@
 package com.mycode.telegramagent.utils;
 
 import com.mycode.telegramagent.dto.JasperDto;
-import com.mycode.telegramagent.repositories.JasperMessageRepo;
+import com.mycode.telegramagent.repositories.AgentMessageRepo;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import lombok.SneakyThrows;
 import net.sf.jasperreports.engine.*;
@@ -33,22 +33,22 @@ public class TextToImage {
      * @param messageService message service which get message from locale bundle
      * @param location file location
      * @param resourceFile jasper resource file location
-     * @param jasperMessageRepo message entity
+     * @param agentMessageRepo message entity
      * */
 
     @SneakyThrows
     public static void textToImage(JasperDto jasperDto, String languages, LocaleMessageService messageService,
-                                   String location, String resourceFile, JasperMessageRepo jasperMessageRepo) {
+                                   String location, String resourceFile, AgentMessageRepo agentMessageRepo) {
         File file = ResourceUtils.getFile(resourceFile);
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         HashMap<String, Object> parameter = new HashMap<String, Object>();
-        parameter.put("money", getJasperMessage("jasper.price", languages, jasperMessageRepo, messageService));
+        parameter.put("money", getJasperMessage("jasper.price", languages, agentMessageRepo, messageService));
         parameter.put("moneyIcon", "\uD83D\uDCB5");
-        parameter.put("date", getJasperMessage("jasper.date", languages, jasperMessageRepo, messageService));
+        parameter.put("date", getJasperMessage("jasper.date", languages, agentMessageRepo, messageService));
         parameter.put("dateIcon", "\uD83D\uDCC5");
-        parameter.put("description", getJasperMessage("jasper.description", languages, jasperMessageRepo, messageService));
+        parameter.put("description", getJasperMessage("jasper.description", languages, agentMessageRepo, messageService));
         if (jasperDto.getNote() != null) {
-            parameter.put("note",getJasperMessage("jasper.note", languages, jasperMessageRepo, messageService));
+            parameter.put("note",getJasperMessage("jasper.note", languages, agentMessageRepo, messageService));
         }
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(Collections.singleton(jasperDto));
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, dataSource);

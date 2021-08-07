@@ -13,11 +13,11 @@ import javax.persistence.*;
  * @implNote This class for Jasper messages
  */
 
-@Entity(name = "jasper_message")
+@Entity(name = "agent_message")
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class JasperMessage {
+public class AgentMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
