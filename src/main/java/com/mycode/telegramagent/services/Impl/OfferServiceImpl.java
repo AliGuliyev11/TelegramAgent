@@ -63,7 +63,7 @@ public class OfferServiceImpl implements IOfferService {
     public Offer saveOffer(String userId, String email, OfferDto offerDto) {
         UserRequest userRequest = offerDAO.getRequestByUUIDAndEmail(userId, email);
 
-//        checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
+        checkOfferMadaInWorkingHours(beginTime, endTime, workingDays);
         if (userRequest == null) {
             throw new RequestNotFound();
         } else if (userRequest.getAgentRequestStatus().equals(AgentRequestStatus.Offer_Made) ||

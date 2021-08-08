@@ -53,7 +53,6 @@ public class OrderLifeCycle {
                     .text(getJasperMessage("warning.message", language, agentMessageRepo, messageService))
                     .userId(userRequest.getUserId()).build());
         }
-        System.out.println("AA");
     }
 
 }
