@@ -4,7 +4,6 @@ import com.mycode.telegramagent.dto.OfferDto;
 import com.mycode.telegramagent.dto.ReplyToOffer;
 import com.mycode.telegramagent.models.Offer;
 import com.mycode.telegramagent.models.UserRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

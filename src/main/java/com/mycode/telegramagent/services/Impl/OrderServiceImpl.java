@@ -80,7 +80,7 @@ public class OrderServiceImpl implements IOrderService {
      * @return UserRequest
      * @throws RequestNotFound if not found any request
      * @throws RequestExpired  if agent request status is expired
-     * @throws RequestAccepted if agent request status is accpeted
+     * @throws RequestAccepted if agent request status is accepted
      */
 
 

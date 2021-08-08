@@ -197,7 +197,7 @@ public class Validation {
      * @param orderDate   user requested start date
      * @param orderDateTo user requested end date
      * @throws CheckStartDate if start date not include this orderDate and orderDateTo range
-     * @implNote Offer start date after user requested start date and not include user requested starrt and end date range
+     * @implNote Offer start date after user requested start date and not include user requested start and end date range
      */
 
     @SneakyThrows

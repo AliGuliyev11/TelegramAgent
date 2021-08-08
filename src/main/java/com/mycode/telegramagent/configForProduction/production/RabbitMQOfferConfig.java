@@ -1,4 +1,4 @@
-package com.mycode.telegramagent.configs.production;
+package com.mycode.telegramagent.configForProduction.production;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

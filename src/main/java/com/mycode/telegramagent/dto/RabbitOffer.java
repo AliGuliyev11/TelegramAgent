@@ -1,13 +1,9 @@
 package com.mycode.telegramagent.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.io.File;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 

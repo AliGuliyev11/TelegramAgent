@@ -29,7 +29,7 @@ public class TextToImage {
 
     /** This method for converting text to jasper report then convert it to image
      * @param jasperDto jasper DTO,see OfferToJasper class
-     * @param languages user reuqest language
+     * @param languages user request language
      * @param messageService message service which get message from locale bundle
      * @param location file location
      * @param resourceFile jasper resource file location
@@ -41,7 +41,7 @@ public class TextToImage {
                                    String location, String resourceFile, AgentMessageRepo agentMessageRepo) {
         File file = ResourceUtils.getFile(resourceFile);
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        HashMap<String, Object> parameter = new HashMap<String, Object>();
+        HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("money", getJasperMessage("jasper.price", languages, agentMessageRepo, messageService));
         parameter.put("date", getJasperMessage("jasper.date", languages, agentMessageRepo, messageService));
         parameter.put("description", getJasperMessage("jasper.description", languages, agentMessageRepo, messageService));

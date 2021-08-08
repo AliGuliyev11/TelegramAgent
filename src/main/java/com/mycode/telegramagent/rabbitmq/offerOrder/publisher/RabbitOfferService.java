@@ -5,7 +5,7 @@ import com.mycode.telegramagent.dto.WarningDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.mycode.telegramagent.configs.production.RabbitMQOfferConfig.*;
+import static com.mycode.telegramagent.configForProduction.production.RabbitMQOfferConfig.*;
 
 
 /**
