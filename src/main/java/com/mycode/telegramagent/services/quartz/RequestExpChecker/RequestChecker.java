@@ -68,7 +68,6 @@ public class RequestChecker extends QuartzJobBean {
             }
         }
 
-
         dao.requestChecker(strDate);
         System.out.println(strDate);
     }

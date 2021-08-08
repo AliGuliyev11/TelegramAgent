@@ -3,19 +3,10 @@ package com.mycode.telegramagent.services.quartz.DeleteExpired;
 import lombok.SneakyThrows;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
-
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 /**
  * @author Ali Guliyev

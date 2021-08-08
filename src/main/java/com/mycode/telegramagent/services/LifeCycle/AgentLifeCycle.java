@@ -4,18 +4,12 @@ import com.mycode.telegramagent.dto.MailDTO;
 import com.mycode.telegramagent.models.Agent;
 import com.mycode.telegramagent.services.Locale.LocaleMessageService;
 import com.mycode.telegramagent.services.email.EmailServiceImpl;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ui.ConcurrentModel;
-import org.springframework.ui.Model;
 
-import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
-
 
 /**
  * @author Ali Guliyev
